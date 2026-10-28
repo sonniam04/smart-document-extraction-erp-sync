@@ -29,3 +29,7 @@ obj/
 Thumbs.db
 .vscode/
 .idea/
+
+# Separate repos (sdes-web, sdes-service)
+/Web/
+/Service/
