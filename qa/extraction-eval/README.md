@@ -22,7 +22,8 @@ pnpm generate            # 30 ฉบับ (--count N เปลี่ยนจ�
 ```bash
 pnpm eval                               # fixture provider — ต้องได้ 100% (ตรวจว่าชุดวัดผลถูกต้อง)
 pnpm eval --provider claude --limit 5   # เรียก Claude API จริง มีค่าใช้จ่าย — ขออนุมัติก่อนรัน
+pnpm eval --provider gemini --limit 5   # เรียก Gemini API จริง (ควรเป็น paid tier)
 ```
 
-- ค่า `ANTHROPIC_API_KEY`, `EXTRACTION_MODEL`, `EXTRACTION_EFFORT` อ่านจาก env หรือ `Service/.env`
+- ค่า `ANTHROPIC_API_KEY` หรือ `GEMINI_API_KEY`, `EXTRACTION_MODEL`, `EXTRACTION_EFFORT` อ่านจาก env หรือ `Service/.env`
 - รายงานเขียนที่ `qa/phase2/extraction-eval.md` (เปลี่ยนด้วย `--report`): ความแม่นยำรายบรรทัด (เกณฑ์ > 92%), ราย field, เวลาเฉลี่ย/p95 (เกณฑ์ ≤ 30 วินาที), อัตรากรอบครอบค่าจริง, ค่าใช้จ่ายโดยประมาณ และตารางความมั่นใจเทียบความถูกต้อง

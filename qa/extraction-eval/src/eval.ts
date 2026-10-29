@@ -1,17 +1,20 @@
 // วัดผลการอ่านเอกสารกับชุดทดสอบ (phase 2 task 7.2, design D10)
-// ใช้: pnpm eval [--provider fixture|claude] [--limit N] [--report ../phase2/extraction-eval.md]
-// provider claude เรียก API จริงและมีค่าใช้จ่าย — ใช้ ANTHROPIC_API_KEY, EXTRACTION_MODEL, EXTRACTION_EFFORT จาก env หรือ Service/.env
+// ใช้: pnpm eval [--provider fixture|claude|gemini] [--limit N] [--report ../phase2/extraction-eval.md]
+// provider claude/gemini เรียก API จริงและมีค่าใช้จ่าย — ใช้ ANTHROPIC_API_KEY / GEMINI_API_KEY, EXTRACTION_MODEL, EXTRACTION_EFFORT จาก env หรือ Service/.env
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import Anthropic from "../../../Service/apps/worker/node_modules/@anthropic-ai/sdk/index.js";
 import * as claudeMod from "../../../Service/apps/worker/src/providers/claude.ts";
 import * as fixtureMod from "../../../Service/apps/worker/src/providers/fixture.ts";
+import * as geminiMod from "../../../Service/apps/worker/src/providers/gemini.ts";
+import { GoogleGenAI } from "@google/genai";
 import * as coreMod from "../../../Service/packages/core/src/index.ts";
 import { cjs, type BBox, type DocumentData, type ExtractionResult } from "./core.ts";
 import { COMPANY, UPLOADED_AT } from "./data.ts";
 
 const { ClaudeExtractionProvider } = cjs(claudeMod);
 const { FixtureExtractionProvider } = cjs(fixtureMod);
+const { GeminiExtractionProvider } = cjs(geminiMod);
 const { HEADER_FIELDS, applyValidationPenalty, toDocumentData, validateDocument } = cjs(coreMod);
 
 const ROOT = resolve(import.meta.dirname, "..");
@@ -22,14 +25,18 @@ const arg = (name: string, def?: string) => {
 };
 
 const envFile = resolve(ROOT, "../../Service/.env");
-if (!process.env.ANTHROPIC_API_KEY && existsSync(envFile)) process.loadEnvFile(envFile);
+if (!process.env.ANTHROPIC_API_KEY && !process.env.GEMINI_API_KEY && existsSync(envFile)) process.loadEnvFile(envFile);
 
 /** ราคา USD ต่อ 1 ล้าน token (input, output) ตามตารางรุ่นปัจจุบัน */
 const PRICES: Record<string, [number, number]> = {
   "claude-opus-5-5": [4, 20],
   "claude-sonnet-5-5": [2, 10],
   "claude-haiku-5-5": [0.1, 0.5],
+  // paid tier ณ 2026-10-29 (3.8-flash ราคานี้ถึง 31 ธ.ค. 2026); PDF คิดราคาเดียวกับภาพ
+  "gemini-3.8-flash": [0.75, 3.75],
+  "gemini-3.5-flash-lite": [0.3, 2.5],
 };
+const DEFAULT_MODEL = { claude: "claude-opus-5-5", gemini: "gemini-3.8-flash" } as const;
 const MIME: Record<string, string> = { pdf: "application/pdf", png: "image/png", jpg: "image/jpeg", tiff: "image/tiff" };
 
 type Answer = { file: string; format: string; data: DocumentData; boxes: Record<string, BBox> };
@@ -63,7 +70,7 @@ async function main() {
   const manifest = JSON.parse(readFileSync(join(OUT, "manifest.json"), "utf8")) as Manifest;
   const docs = limit ? manifest.slice(0, limit) : manifest;
 
-  const model = process.env.EXTRACTION_MODEL || "claude-opus-5-5";
+  const model = process.env.EXTRACTION_MODEL || (providerName === "gemini" ? DEFAULT_MODEL.gemini : DEFAULT_MODEL.claude);
   const effort = (process.env.EXTRACTION_EFFORT || "low") as "low";
   let provider: { name: string; extract: (i: { file: Uint8Array; mime: string }) => Promise<ExtractionResult> };
   if (providerName === "claude") {
@@ -71,9 +78,13 @@ async function main() {
     // SDK ตัวเดียวกับที่ worker ใช้ แต่ TypeScript เห็นเป็นสองเส้นทาง (symlink ของ pnpm) จึงต้อง cast
     const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) as unknown as ConstructorParameters<typeof ClaudeExtractionProvider>[0];
     provider = new ClaudeExtractionProvider(client, { model, effort, timeoutMs: 120_000 });
+  } else if (providerName === "gemini") {
+    if (!process.env.GEMINI_API_KEY) throw new Error("ต้องตั้ง GEMINI_API_KEY (env หรือ Service/.env)");
+    const client = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) as unknown as ConstructorParameters<typeof GeminiExtractionProvider>[0];
+    provider = new GeminiExtractionProvider(client, { model, timeoutMs: 120_000 });
   } else if (providerName === "fixture") {
     provider = new FixtureExtractionProvider(join(OUT, "fixtures"));
-  } else throw new Error(`ไม่รู้จัก provider ${providerName} (fixture | claude)`);
+  } else throw new Error(`ไม่รู้จัก provider ${providerName} (fixture | claude | gemini)`);
 
   let fieldTotal = 0;
   let fieldOk = 0;
@@ -174,7 +185,7 @@ async function main() {
   const md = `# ผลวัดการอ่านเอกสาร (phase 2 task 7.2–7.4)
 
 - วันที่รัน: ${new Date().toISOString()}
-- Provider: \`${providerName}\`${providerName === "claude" ? ` · รุ่น \`${model}\` · effort \`${effort}\`` : ""}
+- Provider: \`${providerName}\`${providerName === "claude" ? ` · รุ่น \`${model}\` · effort \`${effort}\`` : providerName === "gemini" ? ` · รุ่น \`${model}\`` : ""}
 - ชุดทดสอบ: ${docs.length} ฉบับ (สังเคราะห์จาก \`qa/extraction-eval\` — \`pnpm generate\`) · อ่านไม่สำเร็จ ${failed} ฉบับ
 
 ## สรุป
@@ -185,7 +196,7 @@ async function main() {
 | ความแม่นยำราย field หัวเอกสาร | ${pct(fieldOk, fieldTotal)} (${fieldOk}/${fieldTotal}) | — |
 | เวลาเฉลี่ยต่อเอกสาร (เฉพาะการอ่าน) | ${avg.toFixed(1)} วินาที · p95 ${p95.toFixed(1)} วินาที | ≤ 30 วินาที ${avg <= 30 ? "✅" : "❌"} |
 | กรอบของ AI ครอบค่าจริง | ${pct(boxOk, boxTotal)} (${boxOk}/${boxTotal}) | — |
-| ค่าใช้จ่ายโดยประมาณ | ${providerName === "claude" ? `$${cost.toFixed(4)} รวม · $${(n ? cost / n : 0).toFixed(4)} ต่อฉบับ (input ${inTok} / output ${outTok} tokens)` : "ไม่มี (fixture)"} | — |
+| ค่าใช้จ่ายโดยประมาณ | ${providerName !== "fixture" ? `$${cost.toFixed(4)} รวม · $${(n ? cost / n : 0).toFixed(4)} ต่อฉบับ (input ${inTok} / output ${outTok} tokens)` : "ไม่มี (fixture)"} | — |
 | เอกสารที่อ่านผิดแต่ถูกจับได้ (ERROR หรือความมั่นใจ < 85%) | ${flaggedWrongDocs}/${wrongDocs} | ทุกฉบับ |
 
 ## ความมั่นใจเทียบความถูกต้อง (task 7.4)

@@ -25,6 +25,7 @@
 - [x] 3.4 `FixtureExtractionProvider` ที่คืนเฉลยตาม sha256 ของไฟล์ และเลือก provider ด้วย `EXTRACTION_PROVIDER=fake|fixture|claude` (claude ต้องมี `ANTHROPIC_API_KEY` ไม่เช่นนั้น worker หยุดพร้อมข้อความชัดเจน) — ตรวจด้วย test การเลือก provider และการเริ่ม worker โดยไม่มี key
 - [x] 3.5 Worker หลังอ่านตาม design D5: เขียนข้อมูล, `items`, `field_meta`, `validation_issues`, `duration_ms` ใน transaction เดียวกับ `EXTRACTED` — ตรวจด้วย integration test ด้วย fixture provider ว่าเอกสารมีข้อมูลและผลตรวจครบ และการอ่านใหม่ไม่ลบผลรอบก่อน
 - [x] 3.6 อัปเดต `Service/README.md` (env ใหม่, วิธีเปิด provider จริง, เรื่องข้อมูลที่ส่งออกไปภายนอก) — ตรวจว่า README มีตัวแปรใหม่ครบตาม `.env.example`
+- [x] 3.7 `GeminiExtractionProvider` ตาม design D1b (`@google/genai` interactions API, PDF/ภาพ, JSON schema output, ไม่มีข้อมูลผู้ใช้ในคำขอ, จำแนกข้อผิดพลาด) + `EXTRACTION_PROVIDER=gemini`/`GEMINI_API_KEY` ใน config, compose (เฉพาะ worker), `.env.example`, README และ `pnpm eval --provider gemini` — ตรวจด้วย unit test ที่ mock client: คำขอถูกรูปแบบต่อชนิดไฟล์, 429/503 ชั่วคราว, 400 ถาวร, ไม่มี key แล้ว worker หยุดพร้อมข้อความ
 
 ## 4. API: ตรวจแก้ ยืนยัน อนุมัติ ตั้งค่า (`apps/api`)
 
@@ -57,13 +58,13 @@
 
 - [x] 7.1 ตัวสร้างเอกสารสังเคราะห์ ~30 ฉบับตาม design D10 (หลาย template, มี/ไม่มี WHT, หลายหน้า, ยกเว้น VAT, สแกนมี noise/เอียง; ออกเป็น PDF/PNG/TIFF) พร้อมเฉลย JSON และ Tax ID ที่ผ่าน mod 11 — ตรวจด้วย script ที่รัน `validateDocument` กับเฉลยทุกฉบับแล้วไม่มี ERROR
 - [x] 7.2 สคริปต์ `pnpm eval` เรียก provider ที่เลือก รายงานความแม่นยำราย field/รายบรรทัด, เวลาเฉลี่ย/p95, ค่าใช้จ่ายโดยประมาณ และอัตรากรอบ bbox ครอบค่าจริง ลง `qa/phase2/extraction-eval.md` — ตรวจด้วยการรันกับ `fixture` provider แล้วได้ความแม่นยำ 100%
-- [ ] 7.3 (ต้องได้อนุมัติค่าใช้จ่ายก่อน) รันชุดวัดผลกับ Claude provider จริง ปรับ prompt/schema จนความแม่นยำรายบรรทัด >92% และเวลาเฉลี่ย ≤30 วินาที — ตรวจด้วยรายงานใน `qa/phase2/extraction-eval.md` ที่แสดงตัวเลขผ่านเกณฑ์ และบันทึกรุ่น/effort ที่ใช้
+- [ ] 7.3 (ต้องได้อนุมัติค่าใช้จ่ายก่อน) รันชุดวัดผลกับ provider จริง (Claude หรือ Gemini) ปรับ prompt/schema จนความแม่นยำรายบรรทัด >92% และเวลาเฉลี่ย ≤30 วินาที — ตรวจด้วยรายงานใน `qa/phase2/extraction-eval.md` ที่แสดงตัวเลขผ่านเกณฑ์ และบันทึกรุ่น/effort ที่ใช้
 - [ ] 7.4 ตรวจว่าเกณฑ์ความมั่นใจ 0.85 แยก field ที่อ่านผิดได้จากผลชุดวัด (สัดส่วน field ผิดที่ความมั่นใจ ≥0.85) และปรับการลดความมั่นใจตาม design D3 ถ้าจำเป็น — ตรวจด้วยตารางในรายงาน
 
 ## 8. Integration check
 
 - [x] 8.1 ขยาย E2E ใน `qa/e2e` (stack จริง, fixture provider): อัปโหลดเอกสารชุดทดสอบ → `EXTRACTED` → Clerk แก้ยอดที่ผิดตามรายการ "ต้องตรวจ" → ยืนยัน → เคสเสี่ยงเข้าคิว → AP Lead อีกคนอนุมัติ, เคสไม่เสี่ยงคงที่ `VERIFIED`, AP Lead ที่แก้เองอนุมัติไม่ได้ → Exec เห็น audit การแก้ field และการอนุมัติ — ตรวจด้วย Playwright ผ่าน 3 รอบติดกัน
-- [ ] 8.2 (ต้องได้อนุมัติค่าใช้จ่ายก่อน) Smoke test กับ Claude provider จริง: อัปโหลดเอกสารสังเคราะห์ 5 ฉบับผ่านหน้าเว็บแล้วได้ `EXTRACTED` พร้อมข้อมูลและกรอบไฮไลต์ — ตรวจด้วยภาพหน้าจอใน `qa/phase2/evidence/`
+- [ ] 8.2 (ต้องได้อนุมัติค่าใช้จ่ายก่อน) Smoke test กับ provider จริง (Claude หรือ Gemini): อัปโหลดเอกสารสังเคราะห์ 5 ฉบับผ่านหน้าเว็บแล้วได้ `EXTRACTED` พร้อมข้อมูลและกรอบไฮไลต์ — ตรวจด้วยภาพหน้าจอใน `qa/phase2/evidence/`
 
 ## Workflow follow-up
 
