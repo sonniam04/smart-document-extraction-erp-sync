@@ -19,12 +19,12 @@
 
 ## 3. Claude extraction provider (`apps/worker`)
 
-- [ ] 3.1 เพิ่ม `@anthropic-ai/sdk` และ `ClaudeExtractionProvider` ตาม design D1 (PDF เป็น `document`, JPG/PNG เป็น `image`, `messages.parse` + `zodOutputFormat`, `EXTRACTION_MODEL`/`EXTRACTION_EFFORT`, server-side fallback, ตรวจ `stop_reason`) — ตรวจด้วย unit test ที่ mock client: สร้างคำขอถูกรูปแบบต่อชนิดไฟล์ และไม่มีข้อมูลผู้อัปโหลดในคำขอ
-- [ ] 3.2 แปลง TIFF หลายหน้าเป็น PNG ด้วย `sharp` ก่อนส่ง และตรวจ PDF ที่ล็อกรหัสผ่าน — ตรวจด้วย unit test กับไฟล์ตัวอย่าง TIFF 3 หน้า (ได้ 3 ภาพ) และ PDF ล็อก (ได้ข้อผิดพลาดถาวรพร้อมข้อความ "ไฟล์ PDF ถูกล็อกด้วยรหัสผ่าน")
-- [ ] 3.3 จำแนกข้อผิดพลาด transient/permanent, timeout 120 วินาที, SDK `maxRetries: 0` ให้ BullMQ retry ชั้นเดียว และ permanent ใช้ `UnrecoverableError` — ตรวจด้วย unit test: 429 แล้วสำเร็จ → `EXTRACTED`, ขัดข้อง 3 ครั้ง → `FAILED` พร้อมเหตุผล, 400 → `FAILED` ทันที
-- [ ] 3.4 `FixtureExtractionProvider` ที่คืนเฉลยตาม sha256 ของไฟล์ และเลือก provider ด้วย `EXTRACTION_PROVIDER=fake|fixture|claude` (claude ต้องมี `ANTHROPIC_API_KEY` ไม่เช่นนั้น worker หยุดพร้อมข้อความชัดเจน) — ตรวจด้วย test การเลือก provider และการเริ่ม worker โดยไม่มี key
-- [ ] 3.5 Worker หลังอ่านตาม design D5: เขียนข้อมูล, `items`, `field_meta`, `validation_issues`, `duration_ms` ใน transaction เดียวกับ `EXTRACTED` — ตรวจด้วย integration test ด้วย fixture provider ว่าเอกสารมีข้อมูลและผลตรวจครบ และการอ่านใหม่ไม่ลบผลรอบก่อน
-- [ ] 3.6 อัปเดต `Service/README.md` (env ใหม่, วิธีเปิด provider จริง, เรื่องข้อมูลที่ส่งออกไปภายนอก) — ตรวจว่า README มีตัวแปรใหม่ครบตาม `.env.example`
+- [x] 3.1 เพิ่ม `@anthropic-ai/sdk` และ `ClaudeExtractionProvider` ตาม design D1 (PDF เป็น `document`, JPG/PNG เป็น `image`, `messages.parse` + `zodOutputFormat`, `EXTRACTION_MODEL`/`EXTRACTION_EFFORT`, server-side fallback, ตรวจ `stop_reason`) — ตรวจด้วย unit test ที่ mock client: สร้างคำขอถูกรูปแบบต่อชนิดไฟล์ และไม่มีข้อมูลผู้อัปโหลดในคำขอ
+- [x] 3.2 แปลง TIFF หลายหน้าเป็น PNG ด้วย `sharp` ก่อนส่ง และตรวจ PDF ที่ล็อกรหัสผ่าน — ตรวจด้วย unit test กับไฟล์ตัวอย่าง TIFF 3 หน้า (ได้ 3 ภาพ) และ PDF ล็อก (ได้ข้อผิดพลาดถาวรพร้อมข้อความ "ไฟล์ PDF ถูกล็อกด้วยรหัสผ่าน")
+- [x] 3.3 จำแนกข้อผิดพลาด transient/permanent, timeout 120 วินาที, SDK `maxRetries: 0` ให้ BullMQ retry ชั้นเดียว และ permanent ใช้ `UnrecoverableError` — ตรวจด้วย unit test: 429 แล้วสำเร็จ → `EXTRACTED`, ขัดข้อง 3 ครั้ง → `FAILED` พร้อมเหตุผล, 400 → `FAILED` ทันที
+- [x] 3.4 `FixtureExtractionProvider` ที่คืนเฉลยตาม sha256 ของไฟล์ และเลือก provider ด้วย `EXTRACTION_PROVIDER=fake|fixture|claude` (claude ต้องมี `ANTHROPIC_API_KEY` ไม่เช่นนั้น worker หยุดพร้อมข้อความชัดเจน) — ตรวจด้วย test การเลือก provider และการเริ่ม worker โดยไม่มี key
+- [x] 3.5 Worker หลังอ่านตาม design D5: เขียนข้อมูล, `items`, `field_meta`, `validation_issues`, `duration_ms` ใน transaction เดียวกับ `EXTRACTED` — ตรวจด้วย integration test ด้วย fixture provider ว่าเอกสารมีข้อมูลและผลตรวจครบ และการอ่านใหม่ไม่ลบผลรอบก่อน
+- [x] 3.6 อัปเดต `Service/README.md` (env ใหม่, วิธีเปิด provider จริง, เรื่องข้อมูลที่ส่งออกไปภายนอก) — ตรวจว่า README มีตัวแปรใหม่ครบตาม `.env.example`
 
 ## 4. API: ตรวจแก้ ยืนยัน อนุมัติ ตั้งค่า (`apps/api`)
 
