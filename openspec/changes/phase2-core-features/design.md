@@ -58,10 +58,10 @@ Phase 1 (archive `2026-10-29-phase1-architecture-foundations`) ส่งมอ�
 ### D6. API ของการตรวจแก้และอนุมัติ
 | Endpoint | สิทธิ์ | หมายเหตุ |
 |---|---|---|
-| `GET /documents/:id` (ขยาย) | `document.view` | คืนข้อมูล, `field_meta`, `validation_issues`, `risk_flags`, ประวัติสถานะ และประวัติการแก้ |
+| `GET /documents/:id` (ขยาย) | `document.view` | คืน `data`, `field_meta`, `validation_issues`, `risk_flags`, `version`, ประวัติสถานะ และ `edits` (ประวัติการแก้ราย field จาก audit) |
 | `PATCH /documents/:id/data` | `document.edit` | body = `{ version, changes }` แก้เฉพาะ field ที่ส่งมา (รวมรายการทั้งชุดเมื่อแก้ items) ต้องอยู่ที่ `EXTRACTED`; `version` ไม่ตรง → 409 พร้อมข้อมูลล่าสุด; audit ต่อ field |
 | `POST /documents/:id/verify` | `document.verify` | ตรวจซ้ำที่ server, มี `ERROR` → 422 พร้อมรายการ; สำเร็จ → `VERIFIED` + จับคู่/สร้าง vendor + ประเมินความเสี่ยง + `PENDING_APPROVAL` ถ้าเสี่ยง (transaction เดียว) คืน id ของเอกสารรอตรวจถัดไป |
-| `GET /documents?status=PENDING_APPROVAL` | `document.approve` | คิวอนุมัติ เรียงเก่าไปใหม่ |
+| `GET /documents/approvals` | `document.approve` | คิวอนุมัติ เรียงเก่าไปใหม่ (แยกจาก `GET /documents` ที่ Clerk เรียกได้ เพื่อให้ Clerk ได้ 403 ตาม spec) |
 | `POST /documents/:id/approve` / `reject` | `document.approve` | reject ต้องมี `reason`; ตรวจการแยกหน้าที่ (D8) |
 | `GET /documents/:id/file/content` | `document.view_file` | stream ไฟล์ผ่าน API ให้ PDF.js (เส้นทางเดียวกับ origin ของเว็บผ่าน rewrite จึงไม่ต้องตั้ง CORS ที่ S3) + audit การเปิด; TIFF ส่งเป็น PNG รายหน้า (`?page=N`) |
 | `GET/PUT /settings/risk` | `settings.manage` | เกณฑ์ความมั่นใจ, ยอดสูง, Tax ID/ชื่อบริษัท ตรวจค่าก่อนบันทึก + audit ค่าก่อน/หลัง |

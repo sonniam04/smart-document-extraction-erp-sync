@@ -28,13 +28,13 @@
 
 ## 4. API: ตรวจแก้ ยืนยัน อนุมัติ ตั้งค่า (`apps/api`)
 
-- [ ] 4.1 ขยาย `GET /documents/:id` ให้คืน `field_meta`, `validation_issues`, `risk_flags`, ประวัติสถานะ และประวัติการแก้ — ตรวจด้วย e2e test ว่า `FINANCE_EXEC` อ่านได้และไม่มีข้อมูลต้องห้ามหลุด
-- [ ] 4.2 `PATCH /documents/:id/data` ตาม design D6 (เฉพาะ `EXTRACTED`, optimistic `version` → 409 พร้อมข้อมูลล่าสุด, ตรวจใหม่, audit ต่อ field พร้อมค่า AI/ก่อน/หลัง) — ตรวจด้วย e2e test ตาม scenario "สองคนแก้พร้อมกัน", "แก้หลังยืนยัน", "แก้เลขที่เอกสาร" และ `FINANCE_EXEC` ได้ 403
-- [ ] 4.3 `POST /documents/:id/verify` (ตรวจซ้ำ, `ERROR` → 422, จับคู่/สร้าง vendor, ประเมินความเสี่ยง, `VERIFIED` หรือ `PENDING_APPROVAL` ใน transaction เดียว, คืนเอกสารถัดไป) — ตรวจด้วย e2e test: มี ERROR ไม่เปลี่ยนสถานะ, ผู้ขายใหม่ → `PENDING_APPROVAL` + vendor ใหม่, เคสไม่เสี่ยงคงที่ `VERIFIED`, ประวัติมี actor ผู้ใช้และระบบ
-- [ ] 4.4 คิวอนุมัติ `GET /documents?status=PENDING_APPROVAL` และ `POST /documents/:id/approve|reject` พร้อมการแยกหน้าที่ (design D8) — ตรวจด้วย e2e test: อนุมัติ/ปฏิเสธสำเร็จ, reject ไม่มีเหตุผล → 400, ผู้ยืนยันหรือผู้แก้อนุมัติเอง → 403 `SELF_APPROVAL`, อนุมัติพร้อมกันสองคำขอ → 409 หนึ่งคำขอ
-- [ ] 4.5 `GET /documents/:id/file/content` stream ไฟล์ (TIFF เป็น PNG ราย `?page=N`) พร้อม audit การเปิด — ตรวจด้วย e2e test ว่าได้ไฟล์ถูกต้อง, `SYS_ADMIN` ได้ 403, และมี audit
-- [ ] 4.6 `GET/PUT /settings/risk` (ตรวจช่วงค่า, Tax ID บริษัทต้องผ่าน mod 11, audit ค่าก่อน/หลัง) — ตรวจด้วย e2e test ตาม scenario ใน spec `risk-assessment` รวม `AP_CLERK` ได้ 403
-- [ ] 4.7 Swagger ครบทุก endpoint ใหม่พร้อมตัวอย่าง — ตรวจด้วย test ว่า `/docs-json` มีทุก path ใหม่
+- [x] 4.1 ขยาย `GET /documents/:id` ให้คืน `field_meta`, `validation_issues`, `risk_flags`, ประวัติสถานะ และประวัติการแก้ — ตรวจด้วย e2e test ว่า `FINANCE_EXEC` อ่านได้และไม่มีข้อมูลต้องห้ามหลุด
+- [x] 4.2 `PATCH /documents/:id/data` ตาม design D6 (เฉพาะ `EXTRACTED`, optimistic `version` → 409 พร้อมข้อมูลล่าสุด, ตรวจใหม่, audit ต่อ field พร้อมค่า AI/ก่อน/หลัง) — ตรวจด้วย e2e test ตาม scenario "สองคนแก้พร้อมกัน", "แก้หลังยืนยัน", "แก้เลขที่เอกสาร" และ `FINANCE_EXEC` ได้ 403
+- [x] 4.3 `POST /documents/:id/verify` (ตรวจซ้ำ, `ERROR` → 422, จับคู่/สร้าง vendor, ประเมินความเสี่ยง, `VERIFIED` หรือ `PENDING_APPROVAL` ใน transaction เดียว, คืนเอกสารถัดไป) — ตรวจด้วย e2e test: มี ERROR ไม่เปลี่ยนสถานะ, ผู้ขายใหม่ → `PENDING_APPROVAL` + vendor ใหม่, เคสไม่เสี่ยงคงที่ `VERIFIED`, ประวัติมี actor ผู้ใช้และระบบ
+- [x] 4.4 คิวอนุมัติ `GET /documents?status=PENDING_APPROVAL` และ `POST /documents/:id/approve|reject` พร้อมการแยกหน้าที่ (design D8) — ตรวจด้วย e2e test: อนุมัติ/ปฏิเสธสำเร็จ, reject ไม่มีเหตุผล → 400, ผู้ยืนยันหรือผู้แก้อนุมัติเอง → 403 `SELF_APPROVAL`, อนุมัติพร้อมกันสองคำขอ → 409 หนึ่งคำขอ
+- [x] 4.5 `GET /documents/:id/file/content` stream ไฟล์ (TIFF เป็น PNG ราย `?page=N`) พร้อม audit การเปิด — ตรวจด้วย e2e test ว่าได้ไฟล์ถูกต้อง, `SYS_ADMIN` ได้ 403, และมี audit
+- [x] 4.6 `GET/PUT /settings/risk` (ตรวจช่วงค่า, Tax ID บริษัทต้องผ่าน mod 11, audit ค่าก่อน/หลัง) — ตรวจด้วย e2e test ตาม scenario ใน spec `risk-assessment` รวม `AP_CLERK` ได้ 403
+- [x] 4.7 Swagger ครบทุก endpoint ใหม่พร้อมตัวอย่าง — ตรวจด้วย test ว่า `/docs-json` มีทุก path ใหม่
 
 ## 5. Web: หน้าตรวจเอกสารแบบสองฝั่ง (`Web/`)
 
