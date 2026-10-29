@@ -1,4 +1,4 @@
-# QA E2E — Phase 1
+# QA E2E
 
 Playwright suite ที่รันกับ stack จริง (ไม่มี mock)
 
