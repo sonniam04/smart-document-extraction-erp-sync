@@ -4,12 +4,12 @@
 
 ## 1. Domain core: schema ผลการอ่านและกฎตรวจ (`packages/core`)
 
-- [ ] 1.1 ขยาย `ExtractionResult` ตาม design D2 (field หัวเอกสารที่ขาด, `discount` ของบรรทัด, เงินเป็น string ทศนิยม, วันที่ `YYYY-MM-DD`) พร้อม zod schema ที่ใช้ร่วมกับ structured outputs และปรับ `FakeExtractionProvider` — ตรวจด้วย unit test ว่า schema รับผลตัวอย่างที่ถูกต้องและปฏิเสธเงินที่เป็น number/วันที่ พ.ศ.
-- [ ] 1.2 ฟังก์ชัน Tax ID (mod 11) และรหัสสาขา 5 หลัก — ตรวจด้วย unit test ทั้งเลขถูก, หลักสุดท้ายผิด, ความยาวผิด, มีขีด/ช่องว่าง
-- [ ] 1.3 `validateDocument` ตาม design D4 ครอบคลุมทุก requirement ใน spec `invoice-validation` (ยอดรายการ, ชั้นที่ 1, VAT, ชั้นที่ 2, Tax ID, ผู้ซื้อ, เลขที่ซ้ำผ่าน `ctx`, field บังคับและวันที่) คำนวณด้วย `decimal.js` — ตรวจด้วย unit test ทุก scenario ใน spec รวมค่าขอบ 0.01/0.02
-- [ ] 1.4 `assessRisk` ตาม spec `risk-assessment` (ความมั่นใจ, ยอดสูงแบบไม่บังคับ, ผู้ขายใหม่, แก้ยอดเงิน, `WARNING` ค้าง) คืนเหตุผลพร้อมค่าเกณฑ์ ณ เวลาประเมิน — ตรวจด้วย unit test ทุก scenario
-- [ ] 1.5 ฟังก์ชันความมั่นใจรวมและการลดความมั่นใจตามผลกฎตรวจ (design D3) — ตรวจด้วย unit test ว่าความมั่นใจรวมไม่สูงกว่า field เงินที่ต่ำที่สุด
-- [ ] 1.6 ส่งออก validation/risk เป็น ESM ที่ไม่มี dependency ฝั่ง Node เพื่อให้ web import ได้ — ตรวจด้วย test ใน `Web/` ที่ import แล้วได้ผลเท่ากับ test ฝั่ง core
+- [x] 1.1 ขยาย `ExtractionResult` ตาม design D2 (field หัวเอกสารที่ขาด, `discount` ของบรรทัด, เงินเป็น string ทศนิยม, วันที่ `YYYY-MM-DD`) พร้อม zod schema ที่ใช้ร่วมกับ structured outputs และปรับ `FakeExtractionProvider` — ตรวจด้วย unit test ว่า schema รับผลตัวอย่างที่ถูกต้องและปฏิเสธเงินที่เป็น number/วันที่ พ.ศ.
+- [x] 1.2 ฟังก์ชัน Tax ID (mod 11) และรหัสสาขา 5 หลัก — ตรวจด้วย unit test ทั้งเลขถูก, หลักสุดท้ายผิด, ความยาวผิด, มีขีด/ช่องว่าง
+- [x] 1.3 `validateDocument` ตาม design D4 ครอบคลุมทุก requirement ใน spec `invoice-validation` (ยอดรายการ, ชั้นที่ 1, VAT, ชั้นที่ 2, Tax ID, ผู้ซื้อ, เลขที่ซ้ำผ่าน `ctx`, field บังคับและวันที่) คำนวณด้วย `decimal.js` — ตรวจด้วย unit test ทุก scenario ใน spec รวมค่าขอบ 0.01/0.02
+- [x] 1.4 `assessRisk` ตาม spec `risk-assessment` (ความมั่นใจ, ยอดสูงแบบไม่บังคับ, ผู้ขายใหม่, แก้ยอดเงิน, `WARNING` ค้าง) คืนเหตุผลพร้อมค่าเกณฑ์ ณ เวลาประเมิน — ตรวจด้วย unit test ทุก scenario
+- [x] 1.5 ฟังก์ชันความมั่นใจรวมและการลดความมั่นใจตามผลกฎตรวจ (design D3) — ตรวจด้วย unit test ว่าความมั่นใจรวมไม่สูงกว่า field เงินที่ต่ำที่สุด
+- [x] 1.6 ส่งออก validation/risk เป็น ESM ที่ไม่มี dependency ฝั่ง Node เพื่อให้ web import ได้ — ตรวจด้วย test ใน `Web/` ที่ import แล้วได้ผลเท่ากับ test ฝั่ง core
 
 ## 2. Data model (`packages/db`)
 

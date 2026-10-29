@@ -46,9 +46,10 @@ Phase 1 (archive `2026-10-29-phase1-architecture-foundations`) ส่งมอ�
 ### D4. กฎตรวจข้อมูลใน `packages/core/validation`
 - `validateDocument(data, ctx) → ValidationIssue[]` โดย `ValidationIssue = { code, severity: 'ERROR'|'WARNING', message, fields: FieldPath[] }` และ `FieldPath` เช่น `header.grandTotal`, `items[2].amount`
 - คำนวณด้วย `decimal.js` (Prisma `Decimal` ใช้ตัวเดียวกัน) ปัด 2 ตำแหน่งแบบ half-up และเทียบด้วย `abs(diff) <= 0.01`
-- `ctx` มี `companyTaxId`, `uploadedAt` และ `findDuplicate(vendorTaxId, branch, invoiceNo, excludeId)` ที่ api/worker ส่งเข้ามา (core ไม่แตะ DB)
+- `ctx` มี `companyTaxId`, `uploadedAt` และ `duplicateDocNo` ที่ api/worker ค้นมาก่อนแล้วส่งเข้ามา (core ไม่แตะ DB และเป็น sync function จึงใช้ในเว็บได้)
 - Tax ID: สูตร mod 11 ของเลขประจำตัวผู้เสียภาษี 13 หลัก (ผลรวมหลัก 1–12 คูณน้ำหนัก 13…2, หลักที่ 13 = (11 − sum mod 11) mod 10)
-- ผลตรวจล่าสุดเก็บใน `documents.validation_issues` (jsonb ใหม่) เพื่อให้คิวแสดงจำนวนปัญหาได้โดยไม่คำนวณใหม่ และ web ใช้ฟังก์ชันเดียวกันคำนวณสดระหว่างพิมพ์ (ส่งออกจาก core เป็น ESM ที่ไม่มี dependency ฝั่ง Node)
+- ผลตรวจล่าสุดเก็บใน `documents.validation_issues` (jsonb ใหม่) เพื่อให้คิวแสดงจำนวนปัญหาได้โดยไม่คำนวณใหม่ และ web ใช้ฟังก์ชันเดียวกันคำนวณสดระหว่างพิมพ์
+- **การแชร์ข้ามสอง repo:** โมดูล extraction/taxid/validation/risk/confidence ไม่มี dependency ฝั่ง Node (เหลือแค่ `zod`, `decimal.js`) และเว็บคัดลอกมาที่ `Web/src/lib/core/` ด้วย `pnpm sync:core` พร้อม test ของโมดูลเหล่านั้น จึงรัน test ชุดเดียวกันทั้งสองฝั่ง `pnpm sync:core --check` ใช้ตรวจว่าสำเนาไม่เพี้ยน (ต้องมี `Service/` อยู่ข้างกัน) เลือกแทนการ publish package เพราะ repo เป็น private และ CI ของแต่ละ repo เข้าถึงอีก repo ไม่ได้
 - ตรวจซ้ำที่ฝั่ง server ทุกครั้งที่บันทึกและตอนยืนยัน ผลจาก web เป็นแค่ UX
 
 ### D5. Worker หลังอ่าน
