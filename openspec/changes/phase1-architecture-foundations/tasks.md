@@ -51,11 +51,11 @@
 
 ## 7. `sdes-web` foundation
 
-- [ ] 7.1 Scaffold Next.js App Router + Tailwind + Vitest + Playwright + ESLint ต่อ token/component จาก `phase1-design-system` และ GitHub Actions (lint → typecheck → test → build) — ตรวจด้วย workflow เขียว
-- [ ] 7.2 API client + การจัดการ token (access ใน memory, refresh อัตโนมัติ) และ route guard ตาม role — ตรวจด้วย unit test ของ client กรณี 401 → refresh → retry
-- [ ] 7.3 หน้า `/login` และหน้าเปลี่ยนรหัสผ่านชั่วคราว — ตรวจด้วย Playwright: ล็อกอินสำเร็จ, รหัสผิด, บังคับเปลี่ยนรหัส
+- [x] 7.1 Scaffold Next.js App Router + Tailwind + Vitest + Playwright + ESLint ต่อ token/component จาก `phase1-design-system` และ GitHub Actions (lint → typecheck → test → build) — ตรวจด้วย workflow เขียว
+- [x] 7.2 API client + การจัดการ token (access ใน memory, refresh อัตโนมัติ) และ route guard ตาม role — ตรวจด้วย unit test ของ client กรณี 401 → refresh → retry
+- [x] 7.3 หน้า `/login` และหน้าเปลี่ยนรหัสผ่านชั่วคราว — ตรวจด้วย Playwright: ล็อกอินสำเร็จ, รหัสผิด, บังคับเปลี่ยนรหัส
 - [ ] 7.4 หน้า `/documents`: อัปโหลดหลายไฟล์ (ลากวาง), ผลรายไฟล์, ตารางคิวพร้อมสถานะ real-time และปุ่ม "อ่านใหม่" สำหรับ `FAILED` — ตรวจด้วย Playwright กับ stack จริง: อัปโหลดแล้วเห็นสถานะเปลี่ยนเป็น `EXTRACTED` โดยไม่รีเฟรช
-- [ ] 7.5 หน้า `/admin/users`: รายชื่อ, สร้าง, เปลี่ยน role, ปิด/เปิดใช้งาน, รีเซ็ตรหัสผ่าน — ตรวจด้วย Playwright และเมนูนี้ไม่แสดงสำหรับ role อื่น
+- [x] 7.5 หน้า `/admin/users`: รายชื่อ, สร้าง, เปลี่ยน role, ปิด/เปิดใช้งาน, รีเซ็ตรหัสผ่าน — ตรวจด้วย Playwright และเมนูนี้ไม่แสดงสำหรับ role อื่น
 
 ## 8. Integration check
 
