@@ -43,6 +43,8 @@
 - **จำแนกข้อผิดพลาด:** เชื่อมต่อไม่ได้/หมดเวลา/5xx/429 = ชั่วคราว; 401/403 (key ผิด/สิทธิ์ไม่พอ) และ 4xx/error ของ Odoo อื่น = ถาวร พร้อม `message` จาก Odoo
 - **ทางเลือกที่ไม่เลือก:** XML-RPC (กำลังจะถูกถอด และ parse XML ยุ่งกว่า); สร้างใบแจ้งหนี้แบบ posted (ข้ามการตรวจของฝ่ายบัญชีใน Odoo)
 
+- **ที่อยู่ของโค้ด:** `OdooClient`, `OdooErpAdapter`, `WebhookErpAdapter` และ `SyncError` อยู่ใน `packages/core/src/erp-client/` เพราะทั้ง worker (ส่ง) และ api (ทดสอบการเชื่อมต่อ) ใช้ — คิวและ reconciler อยู่ใน `apps/worker/src/erp/sync.ts`
+
 ### D4. `WebhookErpAdapter`
 POST JSON ของ `ErpPayload` ไปที่ URL ที่ตั้งไว้ พร้อม `X-SDES-Timestamp`, `X-SDES-Signature: sha256=<hex(HMAC-SHA256(secret, timestamp + "." + body))>`, `Idempotency-Key`; 2xx ที่มี `{ "transactionId": "..." }` = สำเร็จ, 5xx/429/หมดเวลา = ชั่วคราว, 4xx อื่น = ถาวร ตัวอย่างโค้ดตรวจลายเซ็นของปลายทางอยู่ใน README
 

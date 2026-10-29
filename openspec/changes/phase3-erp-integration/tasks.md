@@ -4,7 +4,7 @@
 
 ## 1. Odoo สำหรับ dev และ payload กลาง
 
-- [ ] 1.1 compose profile `odoo` (`odoo:19` + `postgres:16` ของ Odoo) และสคริปต์ `docker/odoo/setup.sh` ตาม design D10 (ฐาน `sdes_erp`, `account` + `l10n_th`, ผู้ใช้ `sdes-integration`, ออก API key ผ่าน `odoo shell`, พิมพ์ id ของ journal/ภาษีซื้อ 7%/บัญชีค่าใช้จ่าย) — ตรวจด้วยการรันบนเครื่องแล้วเรียก `POST /json/2/res.users/search_read` ด้วย key ที่ได้สำเร็จ
+- [x] 1.1 compose profile `odoo` (`odoo:19` + `postgres:16` ของ Odoo) และสคริปต์ `docker/odoo/setup.sh` ตาม design D10 (ฐาน `sdes_erp`, `account` + `l10n_th`, ผู้ใช้ `sdes-integration`, ออก API key ผ่าน `odoo shell`, พิมพ์ id ของ journal/ภาษีซื้อ 7%/บัญชีค่าใช้จ่าย) — ตรวจด้วยการรันบนเครื่องแล้วเรียก `POST /json/2/res.users/search_read` ด้วย key ที่ได้สำเร็จ
 - [x] 1.2 `buildErpPayload` ใน `packages/core` และปรับ `ErpAdapter` ให้รับ `ErpPayload` + ไฟล์ และคืน `{ transactionId, reused }` (design D2) — ตรวจด้วย unit test: ยอดทุกชั้น, บรรทัด, ข้อมูลหัก ณ ที่จ่าย, idempotency key คงที่ต่อเอกสาร
 - [x] 1.3 ซิงก์ core ไปเว็บด้วย `pnpm sync:core` ถ้าโมดูลที่แชร์เปลี่ยน — ตรวจด้วย `pnpm sync:core --check` ผ่าน
 
@@ -17,17 +17,17 @@
 ## 3. Adapter (`apps/worker`)
 
 - [x] 3.1 `OdooClient` แบบ `json2` และ `jsonrpc` (design D3 transport) พร้อมจำแนกข้อผิดพลาด — ตรวจด้วย unit test ที่ mock `fetch`: รูปแบบ URL/header/body ของทั้งสองแบบ, 5xx/429/หมดเวลา = ชั่วคราว, 401/403/422 = ถาวรพร้อมข้อความจาก Odoo
-- [ ] 3.2 `OdooErpAdapter`: หา/สร้างคู่ค้า, กันซ้ำด้วย `invoice_origin`, สร้างใบแจ้งหนี้ร่าง (ส่วนลดบรรทัดเป็น %, ส่วนลดท้ายบิลเป็นบรรทัดติดลบ, ยกเว้น VAT ไม่ใส่ภาษี, หมายเหตุหัก ณ ที่จ่าย), ตรวจยอดหลังสร้าง, แนบไฟล์ — ตรวจด้วย integration test กับ Odoo ใน profile `odoo` ตามทุก scenario ของ requirement "Odoo vendor bill content", "Withholding tax information", "Vendor partner in ERP" และ "No duplicate records in ERP"
+- [x] 3.2 `OdooErpAdapter`: หา/สร้างคู่ค้า, กันซ้ำด้วย `invoice_origin`, สร้างใบแจ้งหนี้ร่าง (ส่วนลดบรรทัดเป็น %, ส่วนลดท้ายบิลเป็นบรรทัดติดลบ, ยกเว้น VAT ไม่ใส่ภาษี, หมายเหตุหัก ณ ที่จ่าย), ตรวจยอดหลังสร้าง, แนบไฟล์ — ตรวจด้วย integration test กับ Odoo ใน profile `odoo` ตามทุก scenario ของ requirement "Odoo vendor bill content", "Withholding tax information", "Vendor partner in ERP" และ "No duplicate records in ERP"
 - [x] 3.3 `WebhookErpAdapter` (design D4) — ตรวจด้วย unit test กับ HTTP server จำลอง: ลายเซ็นตรวจได้ด้วย secret เดียวกัน, idempotency key เท่ากันเมื่อส่งซ้ำ, 2xx/5xx/4xx จำแนกถูก
 - [x] 3.4 คิว `erp-sync` + reconciler ตาม design D1 (เปลี่ยน `VERIFIED/APPROVED→SYNCING` เมื่อเปิดส่งอัตโนมัติ, retry 3 ครั้ง, `SYNC_FAILED` + `sync_error`, เขียน `erp_sync_attempts`, publish สถานะ) — ตรวจด้วย integration test ด้วย adapter จำลอง: 503 แล้วสำเร็จ → `SYNCED` + 2 attempts, ล้มเหลว 3 ครั้ง → `SYNC_FAILED`, 4xx → ล้มเหลวทันที, การส่งอัตโนมัติปิด → ไม่ส่งและรอ, เปิดแล้ว reconciler ส่งงานค้าง
 
 ## 4. API (`apps/api`)
 
-- [ ] 4.1 `GET/PUT /erp/connection`, `POST /erp/connection/test`, `PUT /erp/connection/auto-sync` (design D5, D7) — ตรวจด้วย e2e test ตาม scenario ใน spec `erp-connection` (secret ไม่ถูกส่งกลับ/ไม่อยู่ใน audit, เว้นว่างคงค่าเดิม, แก้การตั้งค่าแล้วปิดส่งอัตโนมัติ, เปิดก่อนทดสอบถูกปฏิเสธ, `FINANCE_EXEC` ได้ 403)
-- [ ] 4.2 enqueue งานส่งหลังยืนยัน (`VERIFIED`) และอนุมัติ (`APPROVED`) และเมื่อเปิดการส่งอัตโนมัติ — ตรวจด้วย e2e test ว่างานเข้าคิวเฉพาะกรณีที่ spec กำหนด และ `PENDING_APPROVAL`/`REJECTED` ไม่เข้าคิว
-- [ ] 4.3 `POST /documents/resend`, `GET /ops/overview`, `GET /ops/sync-failed` และ permission `ops.view` (SYS_ADMIN, FINANCE_EXEC) ใน core — ตรวจด้วย e2e test: ส่งใหม่หลายฉบับ, `AP_LEAD` ส่งใหม่ได้ 403, Exec อ่านภาพรวมได้, Clerk ได้ 403
-- [ ] 4.4 ขยาย `GET /documents/:id` (เลขอ้างอิง ERP, เวลา, เหตุผลล่าสุด, ประวัติการส่ง) และรายการเอกสาร — ตรวจด้วย e2e test
-- [ ] 4.5 audit: ตัวกรอง `docNo` และ `GET /audit-events/export` (CSV UTF-8 + BOM, stream, สูงสุด 50,000 แถว, audit การส่งออก) — ตรวจด้วย e2e test: ไฟล์ขึ้นต้นด้วย BOM, ภาษาไทยถูกต้อง, มี audit ของการส่งออก, Clerk ได้ 403
+- [x] 4.1 `GET/PUT /erp/connection`, `POST /erp/connection/test`, `PUT /erp/connection/auto-sync` (design D5, D7) — ตรวจด้วย e2e test ตาม scenario ใน spec `erp-connection` (secret ไม่ถูกส่งกลับ/ไม่อยู่ใน audit, เว้นว่างคงค่าเดิม, แก้การตั้งค่าแล้วปิดส่งอัตโนมัติ, เปิดก่อนทดสอบถูกปฏิเสธ, `FINANCE_EXEC` ได้ 403)
+- [x] 4.2 enqueue งานส่งหลังยืนยัน (`VERIFIED`) และอนุมัติ (`APPROVED`) และเมื่อเปิดการส่งอัตโนมัติ — ตรวจด้วย e2e test ว่างานเข้าคิวเฉพาะกรณีที่ spec กำหนด และ `PENDING_APPROVAL`/`REJECTED` ไม่เข้าคิว
+- [x] 4.3 `POST /documents/resend`, `GET /ops/overview`, `GET /ops/sync-failed` และ permission `ops.view` (SYS_ADMIN, FINANCE_EXEC) ใน core — ตรวจด้วย e2e test: ส่งใหม่หลายฉบับ, `AP_LEAD` ส่งใหม่ได้ 403, Exec อ่านภาพรวมได้, Clerk ได้ 403
+- [x] 4.4 ขยาย `GET /documents/:id` (เลขอ้างอิง ERP, เวลา, เหตุผลล่าสุด, ประวัติการส่ง) และรายการเอกสาร — ตรวจด้วย e2e test
+- [x] 4.5 audit: ตัวกรอง `docNo` และ `GET /audit-events/export` (CSV UTF-8 + BOM, stream, สูงสุด 50,000 แถว, audit การส่งออก) — ตรวจด้วย e2e test: ไฟล์ขึ้นต้นด้วย BOM, ภาษาไทยถูกต้อง, มี audit ของการส่งออก, Clerk ได้ 403
 
 ## 5. ความปลอดภัย (platform-security)
 
