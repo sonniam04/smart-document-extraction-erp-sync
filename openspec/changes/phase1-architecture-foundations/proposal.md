@@ -31,6 +31,6 @@
 
 - Repo `sonniam04/sdes-service` (โฟลเดอร์ `Service/`): โค้ดใหม่ทั้งหมด — API, worker, migration, docker-compose
 - Repo `sonniam04/sdes-web` (โฟลเดอร์ `Web/`): โครง Next.js, หน้า login, หน้าจัดการผู้ใช้, หน้าอัปโหลด/คิว (ใช้ component จาก `phase1-design-system`)
-- Dependencies ใหม่: PostgreSQL 16, Redis, S3-compatible storage (MinIO ใน dev), ClamAV
+- Dependencies ใหม่: PostgreSQL 16, Redis, S3-compatible storage (SeaweedFS ใน dev), ClamAV
 - CI: GitHub Actions ในทั้งสอง repo
 - สมมติฐาน: รันบน cloud และใช้ AI ผ่าน API (ตัดสินใจใน explore 2026-10-29); role matrix ตามตารางที่ผู้ใช้ให้เพิ่ม ซึ่งแทนที่ตารางใน BRD ข้อ 4

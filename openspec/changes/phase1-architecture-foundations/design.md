@@ -109,7 +109,7 @@ interface ErpAdapter {
 - Node 22 LTS, pnpm, TypeScript strict, ESLint + Prettier
 - Vitest ทั้งสอง repo (Nest ใช้ผ่าน SWC), Supertest สำหรับ API, Playwright สำหรับ smoke test ของ web
 - **CI (GitHub Actions ต่อ repo):** install → lint → typecheck → test (service ใช้ service containers postgres/redis) → build
-- `docker-compose.yml` ใน `Service/`: postgres:16, redis:7 (AOF), minio, clamav, api, worker
+- `docker-compose.yml` ใน `Service/`: postgres:16, redis:7 (AOF), SeaweedFS (S3 API), clamav, api, worker — เรียกผ่าน Docker CLI ใน WSL (`wsl docker compose`)
 
 ## Risks / Trade-offs
 
@@ -118,7 +118,7 @@ interface ErpAdapter {
 - [Prisma ไม่รู้จัก trigger/grant ที่เขียนด้วย SQL ดิบ อาจถูกลบเมื่อ reset] → ทุก SQL ดิบอยู่ในไฟล์ migration (ไม่ใช่ `db push`) และมี integration test ยืนยันว่า UPDATE/DELETE บน `audit_events` ถูกปฏิเสธ
 - [รับไฟล์ผ่าน API ทำให้ API ต้องรับ 50 × 20MB พร้อมกัน] → stream ลงดิสก์ชั่วคราวแทน memory และทดสอบ 50 concurrent ใน Phase 1 (k6)
 - [Partial unique index ทำให้อัปโหลดไฟล์เดิมของเอกสาร `FAILED` ได้ซ้ำ] → ตั้งใจตาม spec; ทางที่แนะนำคือกด "อ่านใหม่" ซึ่งไม่สร้างเอกสารใหม่
-- [SSE บน MinIO ต้องตั้ง KMS] → dev ใช้ MinIO + auto-encryption ด้วย KES แบบ static key; production ใช้ SSE-S3/KMS ของ cloud
+- [MinIO เลิกเผยแพร่ image ฟรี (พบ 2026-10-29) ผู้ใช้เลือก SeaweedFS แทนใน dev] → โค้ดใช้ S3 API มาตรฐานและส่ง header `ServerSideEncryption: AES256` ทุกครั้ง; ถ้า SeaweedFS ใน dev ไม่รองรับ SSE ให้เปิด/ปิดด้วย env `S3_SSE` และบังคับเปิดใน production (SSE-S3/KMS ของ cloud)
 
 ## Migration Plan
 

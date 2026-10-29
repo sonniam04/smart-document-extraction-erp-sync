@@ -29,7 +29,7 @@
 - **THEN** เอกสารเปลี่ยนเป็น `PROCESSING` และเข้าคิวประมวลผลอีกครั้งโดยไม่ต้องอัปโหลดใหม่
 
 ### Requirement: Transition authority
-การเปลี่ยนสถานะ SHALL ทำได้เฉพาะผู้กระทำที่กำหนด: ระบบ (worker) สำหรับ `UPLOADED→PROCESSING`, `PROCESSING→EXTRACTED/FAILED`, `VERIFIED→PENDING_APPROVAL/SYNCING` และการเปลี่ยนจาก `SYNCING`; `AP_CLERK` หรือ `AP_LEAD` สำหรับ `FAILED→PROCESSING` และ `EXTRACTED→VERIFIED`; `AP_LEAD` สำหรับ `PENDING_APPROVAL→APPROVED/REJECTED`; `SYS_ADMIN` สำหรับ `SYNC_FAILED→SYNCING`
+การเปลี่ยนสถานะ SHALL ทำได้เฉพาะผู้กระทำที่กำหนด: ระบบ (worker) สำหรับ `UPLOADED→PROCESSING`, `PROCESSING→EXTRACTED/FAILED`, `VERIFIED→PENDING_APPROVAL/SYNCING`, `APPROVED→SYNCING` และการเปลี่ยนจาก `SYNCING`; `AP_CLERK` หรือ `AP_LEAD` สำหรับ `FAILED→PROCESSING` และ `EXTRACTED→VERIFIED`; `AP_LEAD` สำหรับ `PENDING_APPROVAL→APPROVED/REJECTED`; `SYS_ADMIN` สำหรับ `SYNC_FAILED→SYNCING`
 
 #### Scenario: Clerk พยายามอนุมัติ
 - **WHEN** ผู้ใช้ที่มีเพียง role `AP_CLERK` ขออนุมัติเอกสารสถานะ `PENDING_APPROVAL`
