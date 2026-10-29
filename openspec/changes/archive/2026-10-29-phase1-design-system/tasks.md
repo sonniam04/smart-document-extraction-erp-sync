@@ -25,14 +25,14 @@
 
 ## 4. Component สำหรับ Phase 2
 
-- [ ] 4.1 DataTable (ตัวเลขชิดขวา, แถว 40 px, sticky header, เน้นแถว/ช่อง confidence ต่ำ) — ตรวจด้วย Playwright ว่าแสดงอย่างน้อย 8 แถวในพื้นที่ split-view บนจอ 1366×768 และ 12 แถวขึ้นไปบน 1920×1080
-- [ ] 4.2 BBoxOverlay บน PDF.js รับพิกัดสัดส่วน 0–1 และไฮไลต์เมื่อ focus field ที่คู่กัน — ตรวจด้วย Playwright ว่ากรอบอยู่ตำแหน่งเดิมเมื่อซูม 100% และ 200%
-- [ ] 4.3 Layout split-view แบบตอบสนอง: ≥1280 px สองฝั่ง, น้อยกว่านั้นสลับแท็บ — ตรวจด้วย Playwright ที่ 1366×768, 1920×1080, 1024 และ 390 px
+- [x] 4.1 DataTable (ตัวเลขชิดขวา, แถว 40 px, sticky header, เน้นแถว/ช่อง confidence ต่ำ) — ตรวจด้วย Playwright ว่าแสดงอย่างน้อย 8 แถวในพื้นที่ split-view บนจอ 1366×768 และ 12 แถวขึ้นไปบน 1920×1080
+- [x] 4.2 BBoxOverlay บน PDF.js รับพิกัดสัดส่วน 0–1 และไฮไลต์เมื่อ focus field ที่คู่กัน — ตรวจด้วย Playwright ว่ากรอบอยู่ตำแหน่งเดิมเมื่อซูม 100% และ 200%
+- [x] 4.3 Layout split-view แบบตอบสนอง: ≥1280 px สองฝั่ง, น้อยกว่านั้นสลับแท็บ — ตรวจด้วย Playwright ที่ 1366×768, 1920×1080, 1024 และ 390 px
 
 ## 5. ตรวจรับ
 
-- [ ] 5.1 รัน Impeccable `audit` และ `critique` บนหน้า `/dev/components` และ wireframe แล้วแก้จุดที่พบ — ตรวจว่าไม่มีประเด็นระดับสูงค้างอยู่
-- [ ] 5.2 ตรวจ requirement ใน spec `ui-design-system` ครบทุกข้อเทียบกับหน้า `/dev/components` — บันทึกผลไว้ที่ `qa/phase1/design-system-check.md` (repo หลัก)
+- [x] 5.1 รัน Impeccable `audit` และ `critique` บนหน้า `/dev/components` และ wireframe แล้วแก้จุดที่พบ — ตรวจว่าไม่มีประเด็นระดับสูงค้างอยู่
+- [x] 5.2 ตรวจ requirement ใน spec `ui-design-system` ครบทุกข้อเทียบกับหน้า `/dev/components` — บันทึกผลไว้ที่ `qa/phase1/design-system-check.md` (repo หลัก)
 
 ## Workflow follow-up
 
