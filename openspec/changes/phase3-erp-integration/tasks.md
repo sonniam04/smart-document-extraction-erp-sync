@@ -16,10 +16,10 @@
 
 ## 3. Adapter (`apps/worker`)
 
-- [ ] 3.1 `OdooClient` แบบ `json2` และ `jsonrpc` (design D3 transport) พร้อมจำแนกข้อผิดพลาด — ตรวจด้วย unit test ที่ mock `fetch`: รูปแบบ URL/header/body ของทั้งสองแบบ, 5xx/429/หมดเวลา = ชั่วคราว, 401/403/422 = ถาวรพร้อมข้อความจาก Odoo
+- [x] 3.1 `OdooClient` แบบ `json2` และ `jsonrpc` (design D3 transport) พร้อมจำแนกข้อผิดพลาด — ตรวจด้วย unit test ที่ mock `fetch`: รูปแบบ URL/header/body ของทั้งสองแบบ, 5xx/429/หมดเวลา = ชั่วคราว, 401/403/422 = ถาวรพร้อมข้อความจาก Odoo
 - [ ] 3.2 `OdooErpAdapter`: หา/สร้างคู่ค้า, กันซ้ำด้วย `invoice_origin`, สร้างใบแจ้งหนี้ร่าง (ส่วนลดบรรทัดเป็น %, ส่วนลดท้ายบิลเป็นบรรทัดติดลบ, ยกเว้น VAT ไม่ใส่ภาษี, หมายเหตุหัก ณ ที่จ่าย), ตรวจยอดหลังสร้าง, แนบไฟล์ — ตรวจด้วย integration test กับ Odoo ใน profile `odoo` ตามทุก scenario ของ requirement "Odoo vendor bill content", "Withholding tax information", "Vendor partner in ERP" และ "No duplicate records in ERP"
-- [ ] 3.3 `WebhookErpAdapter` (design D4) — ตรวจด้วย unit test กับ HTTP server จำลอง: ลายเซ็นตรวจได้ด้วย secret เดียวกัน, idempotency key เท่ากันเมื่อส่งซ้ำ, 2xx/5xx/4xx จำแนกถูก
-- [ ] 3.4 คิว `erp-sync` + reconciler ตาม design D1 (เปลี่ยน `VERIFIED/APPROVED→SYNCING` เมื่อเปิดส่งอัตโนมัติ, retry 3 ครั้ง, `SYNC_FAILED` + `sync_error`, เขียน `erp_sync_attempts`, publish สถานะ) — ตรวจด้วย integration test ด้วย adapter จำลอง: 503 แล้วสำเร็จ → `SYNCED` + 2 attempts, ล้มเหลว 3 ครั้ง → `SYNC_FAILED`, 4xx → ล้มเหลวทันที, การส่งอัตโนมัติปิด → ไม่ส่งและรอ, เปิดแล้ว reconciler ส่งงานค้าง
+- [x] 3.3 `WebhookErpAdapter` (design D4) — ตรวจด้วย unit test กับ HTTP server จำลอง: ลายเซ็นตรวจได้ด้วย secret เดียวกัน, idempotency key เท่ากันเมื่อส่งซ้ำ, 2xx/5xx/4xx จำแนกถูก
+- [x] 3.4 คิว `erp-sync` + reconciler ตาม design D1 (เปลี่ยน `VERIFIED/APPROVED→SYNCING` เมื่อเปิดส่งอัตโนมัติ, retry 3 ครั้ง, `SYNC_FAILED` + `sync_error`, เขียน `erp_sync_attempts`, publish สถานะ) — ตรวจด้วย integration test ด้วย adapter จำลอง: 503 แล้วสำเร็จ → `SYNCED` + 2 attempts, ล้มเหลว 3 ครั้ง → `SYNC_FAILED`, 4xx → ล้มเหลวทันที, การส่งอัตโนมัติปิด → ไม่ส่งและรอ, เปิดแล้ว reconciler ส่งงานค้าง
 
 ## 4. API (`apps/api`)
 
