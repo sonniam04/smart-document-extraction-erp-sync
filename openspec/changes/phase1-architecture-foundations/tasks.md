@@ -60,7 +60,7 @@
 ## 8. Integration check
 
 - [x] 8.1 E2E ตลอดสาย: Admin สร้าง Clerk → Clerk ล็อกอิน/เปลี่ยนรหัส → อัปโหลด 3 ไฟล์ (1 ซ้ำ) → เห็นสถานะ real-time → Exec เห็น audit ของทุกขั้น — ตรวจด้วย Playwright suite ใน `qa/` ที่รันกับ `docker compose up`
-- [ ] 8.2 เขียน `Service/README.md` และ `Web/README.md` (วิธีรัน dev, env ที่ต้องมี, คำสั่ง test) — ตรวจโดยรันตาม README บนเครื่องที่ clone ใหม่แล้วได้ระบบที่ใช้งานได้
+- [x] 8.2 เขียน `Service/README.md` และ `Web/README.md` (วิธีรัน dev, env ที่ต้องมี, คำสั่ง test) — ตรวจโดยรันตาม README บนเครื่องที่ clone ใหม่แล้วได้ระบบที่ใช้งานได้
 
 ## Workflow follow-up
 
