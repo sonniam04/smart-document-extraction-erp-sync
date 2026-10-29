@@ -53,7 +53,7 @@ Phase 1 (archive `2026-10-29-phase1-architecture-foundations`) ส่งมอ�
 - ตรวจซ้ำที่ฝั่ง server ทุกครั้งที่บันทึกและตอนยืนยัน ผลจาก web เป็นแค่ UX
 
 ### D5. Worker หลังอ่าน
-`PROCESSING → EXTRACTED` ใน transaction เดียวกับ: บันทึก `document_extractions`, เขียนค่าที่อ่านได้ลง field ของ `documents`, เก็บ `items` + `field_meta` (ความมั่นใจ/bbox/ค่าที่ AI อ่าน ราย field) และ `validation_issues` แล้ว publish สถานะเดิมผ่าน Redis เวลาที่ใช้ (`duration_ms`) บันทึกใน `document_extractions` เพื่อรายงาน KPI
+`PROCESSING → EXTRACTED` ใน transaction เดียวกับ: บันทึก `document_extractions`, เขียนค่าที่อ่านได้ลง `documents.data` (และ column typed เมื่อค่าถูกรูปแบบ), เก็บ `field_meta` (ความมั่นใจ/bbox/ค่าที่ AI อ่าน ราย field) และ `validation_issues` แล้ว publish สถานะเดิมผ่าน Redis เวลาที่ใช้ (`duration_ms`) บันทึกใน `document_extractions` เพื่อรายงาน KPI
 
 ### D6. API ของการตรวจแก้และอนุมัติ
 | Endpoint | สิทธิ์ | หมายเหตุ |
@@ -70,7 +70,7 @@ Phase 1 (archive `2026-10-29-phase1-architecture-foundations`) ส่งมอ�
 - ไม่ทำเส้นทาง `VERIFIED→SYNCING` ใน phase นี้ เอกสารไม่เสี่ยงคงอยู่ที่ `VERIFIED`
 
 ### D7. Migration ที่ต้องเพิ่ม
-- `documents`: `validation_issues jsonb default '[]'`, `field_meta jsonb default '{}'`, `items jsonb default '[]'` (สำเนาที่แก้ได้ของรายการ — `document_extractions.items` เป็นค่าที่ AI อ่าน แก้ไม่ได้), `buyer_branch char(5)`, `vendor_branch char(5)`, `vendor_tax_id char(13)`, `vendor_name text`, `verified_by uuid`, `verified_at timestamptz`
+- `documents`: `data jsonb default '{}'` (ข้อมูลที่แก้ได้ทั้งชุดเป็นสตริงรวม `items` — เพราะระหว่างแก้อาจมีค่าที่ยังผิดรูปแบบซึ่ง column typed เก็บไม่ได้; column typed เดิมคัดลอกเฉพาะค่าที่ถูกรูปแบบ, ส่วน `document_extractions.items` เป็นค่าที่ AI อ่าน แก้ไม่ได้), `validation_issues jsonb default '[]'`, `field_meta jsonb default '{}'`, `buyer_branch char(5)`, `vendor_branch char(5)`, `vendor_tax_id char(13)`, `vendor_name text`, `verified_by uuid`, `verified_at timestamptz`
 - `document_extractions`: `duration_ms int`, `error text`
 - partial unique index `(vendor_id, invoice_no) WHERE status NOT IN ('REJECTED','UPLOADED','PROCESSING','FAILED','EXTRACTED')` เป็นตาข่ายชั้นสุดท้ายกันเลขที่ซ้ำถูกยืนยันพร้อมกัน (กฎใน D4 แจ้งผู้ใช้ก่อน)
 - settings ใหม่: `company.tax_id`, `company.name` (seed จาก env `COMPANY_TAX_ID`, `COMPANY_NAME`)

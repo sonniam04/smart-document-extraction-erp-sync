@@ -13,9 +13,9 @@
 
 ## 2. Data model (`packages/db`)
 
-- [ ] 2.1 Migration ตาม design D7 (column ใหม่ของ `documents` และ `document_extractions`, partial unique index `(vendor_id, invoice_no)`) — ตรวจด้วย integration test ว่า migrate บน DB ที่มีข้อมูล Phase 1 สำเร็จ และ insert เอกสาร `VERIFIED` เลขที่ซ้ำของผู้ขายเดียวกันถูกปฏิเสธ แต่ `REJECTED` ซ้ำได้
-- [ ] 2.2 Seed `company.tax_id`/`company.name` จาก env (`COMPANY_TAX_ID`, `COMPANY_NAME`) เพิ่มใน `.env.example` — ตรวจด้วย test ว่า seed รันซ้ำไม่ทับค่าที่ Admin แก้แล้ว
-- [ ] 2.3 อัปเดต `Service/docs/data-model.md` สำหรับ column ใหม่ — ตรวจว่าทุก column ใหม่มีคำอธิบาย
+- [x] 2.1 Migration ตาม design D7 (column ใหม่ของ `documents` และ `document_extractions`, partial unique index `(vendor_id, invoice_no)`) — ตรวจด้วย integration test ว่า migrate บน DB ที่มีข้อมูล Phase 1 สำเร็จ และ insert เอกสาร `VERIFIED` เลขที่ซ้ำของผู้ขายเดียวกันถูกปฏิเสธ แต่ `REJECTED` ซ้ำได้
+- [x] 2.2 Seed `company.tax_id`/`company.name` จาก env (`COMPANY_TAX_ID`, `COMPANY_NAME`) เพิ่มใน `.env.example` — ตรวจด้วย test ว่า seed รันซ้ำไม่ทับค่าที่ Admin แก้แล้ว
+- [x] 2.3 อัปเดต `Service/docs/data-model.md` สำหรับ column ใหม่ — ตรวจว่าทุก column ใหม่มีคำอธิบาย
 
 ## 3. Claude extraction provider (`apps/worker`)
 
