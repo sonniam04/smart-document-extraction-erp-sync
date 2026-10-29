@@ -5,14 +5,14 @@
 ## 1. Odoo สำหรับ dev และ payload กลาง
 
 - [ ] 1.1 compose profile `odoo` (`odoo:19` + `postgres:16` ของ Odoo) และสคริปต์ `docker/odoo/setup.sh` ตาม design D10 (ฐาน `sdes_erp`, `account` + `l10n_th`, ผู้ใช้ `sdes-integration`, ออก API key ผ่าน `odoo shell`, พิมพ์ id ของ journal/ภาษีซื้อ 7%/บัญชีค่าใช้จ่าย) — ตรวจด้วยการรันบนเครื่องแล้วเรียก `POST /json/2/res.users/search_read` ด้วย key ที่ได้สำเร็จ
-- [ ] 1.2 `buildErpPayload` ใน `packages/core` และปรับ `ErpAdapter` ให้รับ `ErpPayload` + ไฟล์ และคืน `{ transactionId, reused }` (design D2) — ตรวจด้วย unit test: ยอดทุกชั้น, บรรทัด, ข้อมูลหัก ณ ที่จ่าย, idempotency key คงที่ต่อเอกสาร
-- [ ] 1.3 ซิงก์ core ไปเว็บด้วย `pnpm sync:core` ถ้าโมดูลที่แชร์เปลี่ยน — ตรวจด้วย `pnpm sync:core --check` ผ่าน
+- [x] 1.2 `buildErpPayload` ใน `packages/core` และปรับ `ErpAdapter` ให้รับ `ErpPayload` + ไฟล์ และคืน `{ transactionId, reused }` (design D2) — ตรวจด้วย unit test: ยอดทุกชั้น, บรรทัด, ข้อมูลหัก ณ ที่จ่าย, idempotency key คงที่ต่อเอกสาร
+- [x] 1.3 ซิงก์ core ไปเว็บด้วย `pnpm sync:core` ถ้าโมดูลที่แชร์เปลี่ยน — ตรวจด้วย `pnpm sync:core --check` ผ่าน
 
 ## 2. Data model และการเข้ารหัส secret (`packages/db`)
 
-- [ ] 2.1 Migration ตาม design D6 (`erp_connections`, `vendors.erp_partner_id`, `documents.erp_transaction_id/synced_at/sync_error`, `erp_sync_attempts.reused`) — ตรวจด้วย integration test ว่า migrate บนฐานที่มีข้อมูล Phase 2 สำเร็จ และ `erp_connections` มีได้แถวเดียว
-- [ ] 2.2 `encryptSecret`/`decryptSecret` (AES-256-GCM, กุญแจ `ERP_SECRET_KEY`) + `ERP_SECRET_KEY` ใน `.env.example` และ compose (api, worker) — ตรวจด้วย unit test: เข้ารหัสแล้วถอดได้ค่าเดิม, iv ไม่ซ้ำ, แก้ ciphertext/tag แล้วถอดไม่ผ่าน, ไม่มีกุญแจแล้ว api/worker หยุดพร้อมข้อความเมื่อมีการตั้งค่าที่ต้องถอด
-- [ ] 2.3 อัปเดต `Service/docs/data-model.md` — ตรวจว่าทุก column/ตารางใหม่มีคำอธิบาย
+- [x] 2.1 Migration ตาม design D6 (`erp_connections`, `vendors.erp_partner_id`, `documents.erp_transaction_id/synced_at/sync_error`, `erp_sync_attempts.reused`) — ตรวจด้วย integration test ว่า migrate บนฐานที่มีข้อมูล Phase 2 สำเร็จ และ `erp_connections` มีได้แถวเดียว
+- [x] 2.2 `encryptSecret`/`decryptSecret` (AES-256-GCM, กุญแจ `ERP_SECRET_KEY`) + `ERP_SECRET_KEY` ใน `.env.example` และ compose (api, worker) — ตรวจด้วย unit test: เข้ารหัสแล้วถอดได้ค่าเดิม, iv ไม่ซ้ำ, แก้ ciphertext/tag แล้วถอดไม่ผ่าน, ไม่มีกุญแจแล้ว api/worker หยุดพร้อมข้อความเมื่อมีการตั้งค่าที่ต้องถอด
+- [x] 2.3 อัปเดต `Service/docs/data-model.md` — ตรวจว่าทุก column/ตารางใหม่มีคำอธิบาย
 
 ## 3. Adapter (`apps/worker`)
 
