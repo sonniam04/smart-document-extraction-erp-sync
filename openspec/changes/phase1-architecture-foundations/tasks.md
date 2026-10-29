@@ -54,12 +54,12 @@
 - [x] 7.1 Scaffold Next.js App Router + Tailwind + Vitest + Playwright + ESLint ต่อ token/component จาก `phase1-design-system` และ GitHub Actions (lint → typecheck → test → build) — ตรวจด้วย workflow เขียว
 - [x] 7.2 API client + การจัดการ token (access ใน memory, refresh อัตโนมัติ) และ route guard ตาม role — ตรวจด้วย unit test ของ client กรณี 401 → refresh → retry
 - [x] 7.3 หน้า `/login` และหน้าเปลี่ยนรหัสผ่านชั่วคราว — ตรวจด้วย Playwright: ล็อกอินสำเร็จ, รหัสผิด, บังคับเปลี่ยนรหัส
-- [ ] 7.4 หน้า `/documents`: อัปโหลดหลายไฟล์ (ลากวาง), ผลรายไฟล์, ตารางคิวพร้อมสถานะ real-time และปุ่ม "อ่านใหม่" สำหรับ `FAILED` — ตรวจด้วย Playwright กับ stack จริง: อัปโหลดแล้วเห็นสถานะเปลี่ยนเป็น `EXTRACTED` โดยไม่รีเฟรช
+- [x] 7.4 หน้า `/documents`: อัปโหลดหลายไฟล์ (ลากวาง), ผลรายไฟล์, ตารางคิวพร้อมสถานะ real-time และปุ่ม "อ่านใหม่" สำหรับ `FAILED` — ตรวจด้วย Playwright กับ stack จริง: อัปโหลดแล้วเห็นสถานะเปลี่ยนเป็น `EXTRACTED` โดยไม่รีเฟรช
 - [x] 7.5 หน้า `/admin/users`: รายชื่อ, สร้าง, เปลี่ยน role, ปิด/เปิดใช้งาน, รีเซ็ตรหัสผ่าน — ตรวจด้วย Playwright และเมนูนี้ไม่แสดงสำหรับ role อื่น
 
 ## 8. Integration check
 
-- [ ] 8.1 E2E ตลอดสาย: Admin สร้าง Clerk → Clerk ล็อกอิน/เปลี่ยนรหัส → อัปโหลด 3 ไฟล์ (1 ซ้ำ) → เห็นสถานะ real-time → Exec เห็น audit ของทุกขั้น — ตรวจด้วย Playwright suite ใน `qa/` ที่รันกับ `docker compose up`
+- [x] 8.1 E2E ตลอดสาย: Admin สร้าง Clerk → Clerk ล็อกอิน/เปลี่ยนรหัส → อัปโหลด 3 ไฟล์ (1 ซ้ำ) → เห็นสถานะ real-time → Exec เห็น audit ของทุกขั้น — ตรวจด้วย Playwright suite ใน `qa/` ที่รันกับ `docker compose up`
 - [ ] 8.2 เขียน `Service/README.md` และ `Web/README.md` (วิธีรัน dev, env ที่ต้องมี, คำสั่ง test) — ตรวจโดยรันตาม README บนเครื่องที่ clone ใหม่แล้วได้ระบบที่ใช้งานได้
 
 ## Workflow follow-up
