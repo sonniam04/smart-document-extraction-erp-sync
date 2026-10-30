@@ -80,6 +80,7 @@ POST JSON ของ `ErpPayload` ไปที่ URL ที่ตั้งไว
 
 ### D9. ความปลอดภัย
 - **Rate limit:** `@nestjs/throttler` ใช้ Redis เป็น storage (รองรับหลาย instance) — login/refresh ต่อ IP 10/นาที, upload ต่อผู้ใช้ 60/นาที; 429 พร้อม `Retry-After`
+  - (พบระหว่าง apply 7.1) เว็บเรียก `/auth` ผ่าน proxy ของ Next ทำให้ api เห็นทุกคนเป็น IP ของเว็บ → compose ตั้ง `TRUST_PROXY=loopback, uniquelocal` เป็นค่าเริ่มต้นเพื่อใช้ `X-Forwarded-For` ที่ Next ส่งต่อ; Phase 4 ต้องระบุ IP ของ proxy จริงและไม่เปิด port ของ api สู่ LAN
 - **Headers:** `helmet` ที่ api; เว็บตั้ง `headers()` ใน `next.config.ts` (CSP ที่อนุญาต `self`, socket.io ของ API และ worker ของ PDF.js, `frame-ancestors 'none'`, `nosniff`, `Referrer-Policy`)
 - **Dependency gate:** CI ทั้งสอง repo รัน `pnpm audit --prod --audit-level critical`; ยกเว้นได้ผ่านไฟล์ `security/audit-exceptions.json` ที่ต้องมีเหตุผลและวันหมดอายุ
 - **Authorization regression test:** ใช้ `DiscoveryService` ของ Nest ไล่ทุก route ที่ไม่ใช่ `@Public()` แล้วยืนยันว่ามี `@RequirePermission`; test แบบตารางเรียกทุก route ด้วยผู้ใช้ 4 role แล้วเทียบกับ `PERMISSIONS` (คาด 403 หรือไม่ใช่ 403)

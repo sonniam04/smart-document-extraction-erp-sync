@@ -46,7 +46,7 @@
 
 ## 7. Integration check
 
-- [ ] 7.1 E2E ใน `qa/e2e` กับ stack จริง + Odoo (profile `odoo`) ตาม design D10: ยืนยัน/อนุมัติแล้วเห็นใบแจ้งหนี้ร่างใน Odoo ยอดตรงและมีไฟล์แนบ, ส่งใหม่ไม่เกิดใบซ้ำ, Odoo ปิด → `SYNC_FAILED` → เปิด Odoo → Admin ส่งใหม่ → `SYNCED`, Exec เห็น audit ของการส่ง — ตรวจด้วย Playwright ผ่าน 3 รอบติดกัน
+- [x] 7.1 E2E ใน `qa/e2e` กับ stack จริง + Odoo (profile `odoo`) ตาม design D10: ยืนยัน/อนุมัติแล้วเห็นใบแจ้งหนี้ร่างใน Odoo ยอดตรงและมีไฟล์แนบ, ส่งใหม่ไม่เกิดใบซ้ำ, Odoo ปิด → `SYNC_FAILED` → เปิด Odoo → Admin ส่งใหม่ → `SYNCED`, Exec เห็น audit ของการส่ง — ตรวจด้วย Playwright ผ่าน 3 รอบติดกัน
 - [ ] 7.2 E2E ของ Phase 1–2 ยังผ่านเมื่อเปิด rate limit และ security headers — ตรวจด้วยการรัน `qa/e2e` ทั้งหมด
 
 ## Workflow follow-up
