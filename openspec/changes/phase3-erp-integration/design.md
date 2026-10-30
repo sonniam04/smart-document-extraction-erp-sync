@@ -72,6 +72,7 @@ POST JSON ของ `ErpPayload` ไปที่ URL ที่ตั้งไว
 | `GET /documents/:id` (ขยาย) | `document.view` | เพิ่ม `erpTransactionId`, `syncedAt`, `syncError`, `syncAttempts` |
 | `GET /audit-events` (ขยาย) | `audit.view_all` | เพิ่มตัวกรอง `docNo` |
 | `GET /audit-events/export` | `audit.view_all` | CSV UTF-8 + BOM ตามตัวกรองเดียวกัน สูงสุด 50,000 แถว (stream) + audit การส่งออก |
+| `GET /audit-events/facets` | `audit.view_all` | (เพิ่มระหว่าง apply 6.3) ตัวเลือกของตัวกรอง: `actors` (id + ชื่อผู้ใช้) และ `actions` ที่มีใน audit — Exec อ่าน `/admin/users` ไม่ได้ |
 
 ### D8. Web
 - `/admin/erp` (ตั้งค่า + ทดสอบรายข้อ + สวิตช์ส่งอัตโนมัติ), `/admin/sync` (ภาพรวม + คิวที่ล้มเหลว + ส่งใหม่แบบเลือกหลายรายการ; Exec อ่านอย่างเดียว), `/audit` (ค้นหา + ส่งออก CSV)

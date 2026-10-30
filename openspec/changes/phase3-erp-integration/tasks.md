@@ -31,18 +31,18 @@
 
 ## 5. ความปลอดภัย (platform-security)
 
-- [ ] 5.1 Rate limit ด้วย `@nestjs/throttler` + Redis storage (login/refresh ต่อ IP 10/นาที, upload ต่อผู้ใช้ 60/นาที) — ตรวจด้วย e2e test: คำขอที่ 11 ได้ 429 + `Retry-After` และไม่มี audit `auth.login_failed` ของคำขอนั้น
-- [ ] 5.2 `helmet` ที่ api และ security headers + CSP ใน `next.config.ts` ของเว็บ — ตรวจด้วย e2e test ของ api และ Playwright ว่า header ครบ และหน้าตรวจ (PDF.js, socket.io) ยังทำงานภายใต้ CSP
+- [x] 5.1 Rate limit ด้วย `@nestjs/throttler` + Redis storage (login/refresh ต่อ IP 10/นาที, upload ต่อผู้ใช้ 60/นาที) — ตรวจด้วย e2e test: คำขอที่ 11 ได้ 429 + `Retry-After` และไม่มี audit `auth.login_failed` ของคำขอนั้น
+- [x] 5.2 `helmet` ที่ api และ security headers + CSP ใน `next.config.ts` ของเว็บ — ตรวจด้วย e2e test ของ api และ Playwright ว่า header ครบ และหน้าตรวจ (PDF.js, socket.io) ยังทำงานภายใต้ CSP
 - [ ] 5.3 CI ทั้งสอง repo: `pnpm audit --prod --audit-level critical` + `security/audit-exceptions.json` (เหตุผล + วันหมดอายุ) — ตรวจด้วย workflow เขียว และ test ของสคริปต์ตรวจรายการยกเว้นที่หมดอายุ
-- [ ] 5.4 Authorization regression test (design D9) — ตรวจด้วย test ที่ผ่านกับโค้ดปัจจุบัน และไม่ผ่านเมื่อเพิ่ม route ทดลองที่ไม่มี `@RequirePermission`
+- [x] 5.4 Authorization regression test (design D9) — ตรวจด้วย test ที่ผ่านกับโค้ดปัจจุบัน และไม่ผ่านเมื่อเพิ่ม route ทดลองที่ไม่มี `@RequirePermission`
 
 ## 6. Web (`Web/`)
 
-- [ ] 6.1 หน้า `/admin/erp`: ฟอร์มตั้งค่า (secret แสดงเป็น "ตั้งแล้ว" + ช่องเปลี่ยน), ทดสอบแสดงผลรายข้อ, สวิตช์ส่งอัตโนมัติที่บอกเหตุผลเมื่อเปิดไม่ได้ — ตรวจด้วย Playwright (API จำลอง) ตาม scenario ใน spec `erp-connection`
-- [ ] 6.2 หน้า `/admin/sync`: ภาพรวม (รีเฟรชทุก 30 วินาที), รายการ `SYNC_FAILED` + เลือกหลายรายการ + ส่งใหม่พร้อมกล่องยืนยัน, Exec อ่านอย่างเดียว — ตรวจด้วย Playwright ตาม spec `operations-monitoring`
-- [ ] 6.3 หน้า `/audit`: ตัวกรอง (ช่วงเวลา, ผู้กระทำ, ประเภท, เลขเอกสาร), ตารางแบ่งหน้าพร้อมค่าก่อน/หลัง, ส่งออก CSV — ตรวจด้วย Playwright ตาม requirement "Audit trail viewer" และ "Audit export"
-- [ ] 6.4 สถานะการส่งในคิวและหน้าตรวจ (เลขอ้างอิง ERP, เหตุผล `SYNC_FAILED` โดยไม่มีปุ่มส่งใหม่สำหรับ role ที่ไม่มีสิทธิ์) และเมนูใหม่ใน `lib/roles.ts` — ตรวจด้วย Playwright
-- [ ] 6.5 อัปเดต `Web/README.md` และ `Service/README.md` (การตั้งค่า Odoo, profile `odoo`, `ERP_SECRET_KEY`, ตัวอย่างตรวจลายเซ็น webhook, rate limit) — ตรวจว่า env ใหม่ทุกตัวมีอธิบาย
+- [x] 6.1 หน้า `/admin/erp`: ฟอร์มตั้งค่า (secret แสดงเป็น "ตั้งแล้ว" + ช่องเปลี่ยน), ทดสอบแสดงผลรายข้อ, สวิตช์ส่งอัตโนมัติที่บอกเหตุผลเมื่อเปิดไม่ได้ — ตรวจด้วย Playwright (API จำลอง) ตาม scenario ใน spec `erp-connection`
+- [x] 6.2 หน้า `/admin/sync`: ภาพรวม (รีเฟรชทุก 30 วินาที), รายการ `SYNC_FAILED` + เลือกหลายรายการ + ส่งใหม่พร้อมกล่องยืนยัน, Exec อ่านอย่างเดียว — ตรวจด้วย Playwright ตาม spec `operations-monitoring`
+- [x] 6.3 หน้า `/audit`: ตัวกรอง (ช่วงเวลา, ผู้กระทำ, ประเภท, เลขเอกสาร), ตารางแบ่งหน้าพร้อมค่าก่อน/หลัง, ส่งออก CSV — ตรวจด้วย Playwright ตาม requirement "Audit trail viewer" และ "Audit export"
+- [x] 6.4 สถานะการส่งในคิวและหน้าตรวจ (เลขอ้างอิง ERP, เหตุผล `SYNC_FAILED` โดยไม่มีปุ่มส่งใหม่สำหรับ role ที่ไม่มีสิทธิ์) และเมนูใหม่ใน `lib/roles.ts` — ตรวจด้วย Playwright
+- [x] 6.5 อัปเดต `Web/README.md` และ `Service/README.md` (การตั้งค่า Odoo, profile `odoo`, `ERP_SECRET_KEY`, ตัวอย่างตรวจลายเซ็น webhook, rate limit) — ตรวจว่า env ใหม่ทุกตัวมีอธิบาย
 
 ## 7. Integration check
 
