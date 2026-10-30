@@ -33,7 +33,7 @@
 
 - [x] 5.1 Rate limit ด้วย `@nestjs/throttler` + Redis storage (login/refresh ต่อ IP 10/นาที, upload ต่อผู้ใช้ 60/นาที) — ตรวจด้วย e2e test: คำขอที่ 11 ได้ 429 + `Retry-After` และไม่มี audit `auth.login_failed` ของคำขอนั้น
 - [x] 5.2 `helmet` ที่ api และ security headers + CSP ใน `next.config.ts` ของเว็บ — ตรวจด้วย e2e test ของ api และ Playwright ว่า header ครบ และหน้าตรวจ (PDF.js, socket.io) ยังทำงานภายใต้ CSP
-- [ ] 5.3 CI ทั้งสอง repo: `pnpm audit --prod --audit-level critical` + `security/audit-exceptions.json` (เหตุผล + วันหมดอายุ) — ตรวจด้วย workflow เขียว และ test ของสคริปต์ตรวจรายการยกเว้นที่หมดอายุ
+- [x] 5.3 CI ทั้งสอง repo: `pnpm audit --prod --audit-level critical` + `security/audit-exceptions.json` (เหตุผล + วันหมดอายุ) — ตรวจด้วย workflow เขียว และ test ของสคริปต์ตรวจรายการยกเว้นที่หมดอายุ
 - [x] 5.4 Authorization regression test (design D9) — ตรวจด้วย test ที่ผ่านกับโค้ดปัจจุบัน และไม่ผ่านเมื่อเพิ่ม route ทดลองที่ไม่มี `@RequirePermission`
 
 ## 6. Web (`Web/`)
@@ -51,5 +51,5 @@
 
 ## Workflow follow-up
 
-- ขอรุ่น/edition ของ Odoo จริงจากผู้ใช้ แล้วทดสอบการเชื่อมต่อกับ Odoo ของบริษัท (ไม่ใช่ใน dev) ก่อนเปิดการส่งอัตโนมัติ
+- ~~ขอรุ่น/edition ของ Odoo จริงจากผู้ใช้~~ — ตัดสินแล้ว 2026-10-30: โปรเจกต์ส่วนตัว ไม่มี Odoo ของบริษัท ใช้ Odoo 19 Community ผ่าน JSON-2 (รุ่นที่ทดสอบใน E2E) เป็นเป้าหมาย
 - รีวิวกับผู้ใช้แล้ว archive ด้วย `/opsx:archive`
