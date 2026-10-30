@@ -40,7 +40,7 @@
 
 ## 6. Integration check
 
-- [ ] 6.1 E2E ใน `qa/e2e` กับ stack จริง: Admin สร้าง key ขอบเขตอัปโหลด → อัปโหลดด้วย `curl`/API ด้วย key → เอกสารเข้าคิวและ Clerk เห็น → Exec เห็นผู้อัปโหลดเป็นชื่อ key ใน audit → Admin เพิกถอน → key ใช้ไม่ได้; Clerk เห็นผู้ขายในทะเบียน; Exec เปิดรายงานแล้วยอดตรงกับเอกสารที่ทำใน test; Admin เห็น error ที่จำลองใน System logs — ตรวจด้วย Playwright ผ่าน 3 รอบติดกัน
+- [x] 6.1 E2E ใน `qa/e2e` กับ stack จริง: Admin สร้าง key ขอบเขตอัปโหลด → อัปโหลดด้วย `curl`/API ด้วย key → เอกสารเข้าคิวและ Clerk เห็น → Exec เห็นผู้อัปโหลดเป็นชื่อ key ใน audit → Admin เพิกถอน → key ใช้ไม่ได้; Clerk เห็นผู้ขายในทะเบียน; Exec เปิดรายงานแล้วยอดตรงกับเอกสารที่ทำใน test; Admin เห็น error ที่จำลองใน System logs — ตรวจด้วย Playwright ผ่าน 3 รอบติดกัน
 - [ ] 6.2 E2E ของ Phase 1–3 และ test ของเว็บทั้งหมดยังผ่าน — ตรวจด้วยการรัน `qa/e2e` และ `pnpm test:e2e` ของเว็บทั้งชุด
 
 ## Workflow follow-up
