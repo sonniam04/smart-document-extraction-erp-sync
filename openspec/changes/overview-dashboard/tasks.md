@@ -4,19 +4,19 @@
 
 ## 1. สิทธิ์และโค้ดคำนวณที่ใช้ร่วมกัน (`packages/core`, `apps/api`)
 
-- [ ] 1.1 เพิ่ม permission `dashboard.view` ให้ทั้ง 4 role ใน `packages/core` แล้ว `pnpm sync:core` ไปเว็บ — ตรวจด้วย unit test ของ permission matrix ตาม spec `user-access` (ทุก role มี, ขอบเขตของ API key ไม่มี) และ `pnpm sync:core --check` ผ่าน
-- [ ] 1.2 ย้ายการคำนวณตัวชี้วัดกระบวนการและยอดเงินของ `/reports/summary` ไปเป็น `ReportMetrics` ที่รับช่วงเวลา (design D2) — ตรวจด้วย e2e test ของรายงานเดิมผ่านโดยไม่แก้ test
-- [ ] 1.3 ย้ายการอ่านคิว/การเชื่อมต่อ ERP ของ `/ops/overview` เป็นฟังก์ชันที่ใช้ร่วมกัน — ตรวจด้วย e2e test ของ operations เดิมผ่านโดยไม่แก้ test
+- [x] 1.1 เพิ่ม permission `dashboard.view` ให้ทั้ง 4 role ใน `packages/core` แล้ว `pnpm sync:core` ไปเว็บ — ตรวจด้วย unit test ของ permission matrix ตาม spec `user-access` (ทุก role มี, ขอบเขตของ API key ไม่มี) และ `pnpm sync:core --check` ผ่าน
+- [x] 1.2 ย้ายการคำนวณตัวชี้วัดกระบวนการและยอดเงินของ `/reports/summary` ไปเป็น `ReportMetrics` ที่รับช่วงเวลา (design D2) — ตรวจด้วย e2e test ของรายงานเดิมผ่านโดยไม่แก้ test
+- [x] 1.3 ย้ายการอ่านคิว/การเชื่อมต่อ ERP ของ `/ops/overview` เป็นฟังก์ชันที่ใช้ร่วมกัน — ตรวจด้วย e2e test ของ operations เดิมผ่านโดยไม่แก้ test
 
 ## 2. `GET /dashboard` (`apps/api`)
 
-- [ ] 2.1 endpoint + การประกอบส่วนตามสิทธิ์ (design D1) — ตรวจด้วย e2e test ตาม spec "Sections follow existing permissions": Clerk ไม่มี `finance`/`health`, Admin มีเฉพาะ `health` (มี `errors24h`, `expiringKeys`), Exec มี `health` แต่ไม่มี `errors24h`/`expiringKeys`, Lead+Exec ได้ทุกส่วนยกเว้นของ Admin, API key ได้ 403
-- [ ] 2.2 `backlog` (design D3) — ตรวจด้วย e2e test ตาม spec "Work backlog": จำนวนแต่ละกลุ่มและ `oldestAt` ของฉบับเก่าสุด, `UPLOADED`+`PROCESSING` รวมเป็นกลุ่มกำลังอ่าน
-- [ ] 2.3 `throughput` 14 วัน (design D3) — ตรวจด้วย e2e test ตาม spec "Throughput": 14 แถวเสมอรวมวันที่เป็น 0, เอกสาร 00:30 น. เวลาไทยนับเป็นวันนั้น, ตรวจแล้ว/ส่งแล้วนับครั้งแรกที่เข้าสถานะเท่านั้น
-- [ ] 2.4 `indicators` และ `finance` (design D2) — ตรวจด้วย e2e test ตาม spec "BRD indicators" และ "Finance snapshot": ไม่มีเอกสารยืนยันได้ `null` ไม่ใช่ 0, ยอดเงินเดือนนี้เท่ากับ `/reports/summary` ของเดือนเดียวกัน, เดือนก่อนเป็น 0 ไม่เกิดข้อผิดพลาด
-- [ ] 2.5 `health` (design D4) — ตรวจด้วย e2e test ตาม spec "System health": นับ error เฉพาะ 24 ชั่วโมงและระดับ error, key ที่ถูกเพิกถอนหรือหมดอายุแล้วไม่อยู่ในรายการใกล้หมดอายุ
-- [ ] 2.6 วัดเวลา `GET /dashboard` ด้วยผู้ใช้ที่ได้ทุกส่วนบนฐาน `sdes_perf` (12 เดือน × 3,500 ฉบับ) — ตรวจว่าตอบภายใน 1 วินาที (เพิ่ม index ตาม design D3 ถ้าจำเป็น) และบันทึกผลใน `qa/` ของรีโพหลัก
-- [ ] 2.7 อัปเดต Swagger/README ของ Service — ตรวจว่า `/dashboard` อยู่ใน Swagger พร้อมตัวอย่างผลลัพธ์
+- [x] 2.1 endpoint + การประกอบส่วนตามสิทธิ์ (design D1) — ตรวจด้วย e2e test ตาม spec "Sections follow existing permissions": Clerk ไม่มี `finance`/`health`, Admin มีเฉพาะ `health` (มี `errors24h`, `expiringKeys`), Exec มี `health` แต่ไม่มี `errors24h`/`expiringKeys`, Lead+Exec ได้ทุกส่วนยกเว้นของ Admin, API key ได้ 403
+- [x] 2.2 `backlog` (design D3) — ตรวจด้วย e2e test ตาม spec "Work backlog": จำนวนแต่ละกลุ่มและ `oldestAt` ของฉบับเก่าสุด, `UPLOADED`+`PROCESSING` รวมเป็นกลุ่มกำลังอ่าน
+- [x] 2.3 `throughput` 14 วัน (design D3) — ตรวจด้วย e2e test ตาม spec "Throughput": 14 แถวเสมอรวมวันที่เป็น 0, เอกสาร 00:30 น. เวลาไทยนับเป็นวันนั้น, ตรวจแล้ว/ส่งแล้วนับครั้งแรกที่เข้าสถานะเท่านั้น
+- [x] 2.4 `indicators` และ `finance` (design D2) — ตรวจด้วย e2e test ตาม spec "BRD indicators" และ "Finance snapshot": ไม่มีเอกสารยืนยันได้ `null` ไม่ใช่ 0, ยอดเงินเดือนนี้เท่ากับ `/reports/summary` ของเดือนเดียวกัน, เดือนก่อนเป็น 0 ไม่เกิดข้อผิดพลาด
+- [x] 2.5 `health` (design D4) — ตรวจด้วย e2e test ตาม spec "System health": นับ error เฉพาะ 24 ชั่วโมงและระดับ error, key ที่ถูกเพิกถอนหรือหมดอายุแล้วไม่อยู่ในรายการใกล้หมดอายุ
+- [x] 2.6 วัดเวลา `GET /dashboard` ด้วยผู้ใช้ที่ได้ทุกส่วนบนฐาน `sdes_perf` (12 เดือน × 3,500 ฉบับ) — ตรวจว่าตอบภายใน 1 วินาที (เพิ่ม index ตาม design D3 ถ้าจำเป็น) และบันทึกผลใน `qa/` ของรีโพหลัก
+- [x] 2.7 อัปเดต Swagger/README ของ Service — ตรวจว่า `/dashboard` อยู่ใน Swagger พร้อมตัวอย่างผลลัพธ์
 
 ## 3. Web (`Web/`)
 
