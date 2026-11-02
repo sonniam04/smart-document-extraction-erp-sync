@@ -36,8 +36,8 @@
 - **นอกขอบเขต:** การทดสอบตาม BRD (ความแม่นยำของ AI จริง > 92%, < 30 วินาที, 500 ฉบับ, load test 50 คนพร้อมกัน, pentest) — ทำหลัง Phase 4 ตามที่ผู้ใช้กำหนด; high availability หลายเครื่อง; CDN; การ deploy Odoo บน production (ยังเปิดด้วย profile ได้ถ้า RAM พอ)
 - **Branch:** แตกต่อจาก `feat/overview-dashboard` (Service/Web) และ `docs/overview-dashboard` (repo หลัก) จนกว่า PR ก่อนหน้าจะ merge
 - **สมมติฐานที่ต้องรีวิว** (เลือกค่าแนะนำแทนการถาม — ปรับได้ตอนรีวิว):
-  1. **Host:** VM ARM ของ Oracle Cloud Always Free เครื่องเดียว (2 OCPU / 12 GB) — ผู้ใช้ต้องสมัครบัญชีเอง (ต้องใช้บัตรยืนยันตัวตน) และอาจเจอ "Out of host capacity" ในบาง region
+  1. **Host (ฟรี 100%):** VM ARM ของ Oracle Cloud Always Free เครื่องเดียว (2 OCPU / 12 GB) ด้วยบัญชี Free Tier ที่ไม่อัปเกรดเป็น Pay As You Go — สมัครต้องใช้บัตรยืนยันตัวตน (ไม่ตัดเงิน) และอาจเจอ "Out of host capacity" ในบาง region
   2. **ชื่อโดเมน:** subdomain ฟรีจาก DuckDNS (เปลี่ยนเป็นโดเมนของผู้ใช้ได้ด้วยค่าตั้งเดียว)
-  3. **การอ่านเอกสารบน production:** Gemini ด้วย API key ของผู้ใช้ (มีโควตาฟรี) — ระหว่างยังไม่มี key ใช้ provider `fake` สำหรับสาธิต
+  3. **การอ่านเอกสารบน production:** ค่าเริ่มต้น provider `fake` (สาธิต); เปิด Gemini ด้วย API key ฟรีของผู้ใช้ได้ แต่แผนฟรีของ Gemini อาจนำข้อมูลไปใช้ปรับปรุงผลิตภัณฑ์ จึงใช้กับเอกสารตัวอย่างเท่านั้น
   4. **Odoo:** ไม่ deploy เป็นค่าเริ่มต้น การส่ง ERP ใช้ webhook หรือปิดไว้
   5. **Build:** build image บนเครื่อง production จาก git แทนการใช้ registry เพราะ repo เป็น private และโควตา GitHub Packages ฟรีของ private repo น้อย

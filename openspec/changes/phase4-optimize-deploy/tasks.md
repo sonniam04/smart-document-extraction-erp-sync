@@ -31,7 +31,7 @@
 
 ## 5. ขึ้นเครื่องจริง
 
-- [ ] 5.1 **[ผู้ใช้]** สร้างบัญชี OCI, VM Ampere A1 (2 OCPU / 12 GB, Ubuntu 24.04), reserved public IP, security list 22/80/443, subdomain DuckDNS ชี้ IP — Claude เขียนคู่มือทีละขั้นใน `docs/deploy/oci.md` ของรีโพหลักก่อน และตรวจผลด้วย `ssh` + `dig`
+- [ ] 5.1 **[ผู้ใช้]** สร้างบัญชี OCI, VM Ampere A1 (2 OCPU / 12 GB, Ubuntu 24.04) ด้วยบัญชี Free Tier ที่ไม่อัปเกรด, security list 22/80/443, subdomain DuckDNS + token สำหรับ cron อัปเดต IP — Claude เขียนคู่มือทีละขั้นใน `docs/deploy/oci.md` ของรีโพหลักก่อน และตรวจผลด้วย `ssh` + `dig`
 - [ ] 5.2 bootstrap + `init-env.sh` + deploy ครั้งแรก (migrate + seed) บน VM — ตรวจตาม spec "Single HTTPS entry point": `https://<โดเมน>` ใบรับรองถูกต้อง, http พาไป https, สแกน port จากภายนอก (`nmap`) เห็นเฉพาะ 22/80/443; Admin ล็อกอินและถูกบังคับเปลี่ยนรหัส
 - [ ] 5.3 smoke test บนเครื่องจริง: Admin สร้าง Clerk → Clerk อัปโหลดไฟล์ตัวอย่าง (provider ตามค่าตั้ง — `fake` ถ้ายังไม่มี key) → รอตรวจ → ยืนยัน → หน้าภาพรวมและ audit แสดงถูกต้อง — ตรวจด้วย Playwright smoke spec ที่ชี้ไปโดเมนจริง (บัญชีทดสอบลบทิ้งหลังรัน)
 - [ ] 5.4 reboot VM แล้วระบบกลับมาเอง และทดสอบ `rollback.sh` บนเครื่องจริงหนึ่งรอบ — ตรวจด้วย smoke spec ผ่านหลังทั้งสองกรณี

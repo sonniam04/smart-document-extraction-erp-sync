@@ -29,11 +29,12 @@
 ### D1. Host: Oracle Cloud Always Free VM ARM เครื่องเดียว + docker compose
 - Ampere A1 2 OCPU / 12 GB, Ubuntu 24.04 ARM64, boot volume 100 GB (อยู่ในโควตาฟรี 200 GB)
 - ทางเลือกที่ไม่เลือก: แยก PaaS ฟรี (Render/Koyeb สำหรับเว็บ+api, Neon สำหรับ Postgres, Upstash สำหรับ Redis, R2 สำหรับไฟล์) — container 512 MB ที่หยุดเมื่อว่างรัน worker ที่ต้องทำงานตลอดและ ClamAV (~1 GB) ไม่ได้ และ Redis แบบนับคำสั่งจะหมดโควตาเร็วเพราะ BullMQ poll ตลอด
+- **ฟรี 100% (ข้อกำหนดของผู้ใช้):** ใช้เฉพาะทรัพยากรที่ติดป้าย Always Free และ**ไม่อัปเกรดบัญชีเป็น Pay As You Go** — บัญชี Free Tier สร้างทรัพยากรเกินโควตาไม่ได้อยู่แล้ว จึงไม่มีทางถูกเรียกเก็บเงิน; ใช้ ephemeral public IP + DuckDNS updater แทน reserved IP; boot volume 100 GB จากโควตาฟรี 200 GB; Object Storage สำหรับชุดสำรองไม่เกิน 20 GB; หลังเครดิตทดลอง 30 วันหมด VM ที่อยู่ในโควตาฟรีทำงานต่อ
 - ความเสี่ยงเรื่องนโยบายฟรีเปลี่ยน (ลดจาก 4/24 เหลือ 2/12 ในปี 2026) รับมือด้วยการออกแบบให้ทุกอย่างอยู่ใน compose + สำรองข้อมูลออกนอก volume เพื่อย้ายไป VPS อื่นได้ภายในชั่วโมง
 
 ### D2. ทางเข้า: Caddy เป็น reverse proxy ตัวเดียว
 - เปิดออกนอกเฉพาะ 80/443 (Caddy) และ 22 (SSH ด้วย key เท่านั้น) ทั้งใน security list ของ OCI และ firewall ของเครื่อง; service อื่นไม่มี `ports:` ใน compose production
-- HTTPS อัตโนมัติจาก Let's Encrypt ด้วยชื่อใน `SDES_DOMAIN` (ค่าเริ่มต้น subdomain ของ DuckDNS ที่อัปเดต IP ด้วย cron ถ้า IP เปลี่ยน)
+- HTTPS อัตโนมัติจาก Let's Encrypt ด้วยชื่อใน `SDES_DOMAIN` (ค่าเริ่มต้น subdomain ของ DuckDNS ที่ cron บน VM อัปเดต IP ทุก 5 นาที — รองรับ ephemeral IP ที่เปลี่ยนเมื่อสร้าง VM ใหม่)
 - route: `/api/*` (ตัด prefix) และ `/auth/*` → api, `/ws/*` → api (websocket), ที่เหลือ → web; จึงเลิกผ่าน rewrite ของ Next ใน production (ลด hop และให้ api เห็น IP จาก Caddy โดยตรง) — rewrite ยังอยู่สำหรับ dev
 - Caddy บีบอัด `zstd`/`gzip`, ส่ง `X-Forwarded-For` เป็น IP จริง และลบค่าที่ผู้ใช้ส่งมา; เว็บ build ด้วย `NEXT_PUBLIC_SDES_WS_URL=https://<โดเมน>` จึงต่อ socket.io origin เดียวกับหน้าเว็บ (CSP `connect-src 'self'`)
 - compose ใช้ network ภายในที่กำหนด subnet ตายตัว และ api ตั้ง `TRUST_PROXY=<IP ของ Caddy>` (ไม่ใช่ทั้ง subnet) — ตรงกับ spec platform-security "Client IP behind a reverse proxy"
@@ -95,12 +96,13 @@
 - [downtime ไม่กี่วินาทีตอนสลับ container] → ยอมรับ (โปรเจกต์ส่วนตัว); health check กันไม่ให้สลับไปตัวที่เสีย
 - [rollback กับ migration ที่ไม่ใช่แบบเพิ่ม] → สำรองก่อน migrate ทุกครั้ง + คู่มือกู้คืน; code review ตรวจว่า migration เป็นแบบเพิ่ม
 - [Gemini free tier มีโควตาต่อนาที/ต่อวัน] → คิวของ worker ลองซ้ำแบบ backoff อยู่แล้ว; การวัดความแม่นยำจริงอยู่ในการทดสอบหลัง Phase 4
-- [IP สาธารณะของ VM เปลี่ยนเมื่อสร้างใหม่] → จอง reserved public IP (ฟรี 1 ตัว) หรือให้ cron อัปเดต DuckDNS
+- [IP สาธารณะของ VM เปลี่ยนเมื่อสร้างใหม่] → cron อัปเดต DuckDNS (ไม่ใช้ reserved IP เพื่อไม่ต้องพึ่งโควตาที่ไม่แน่ใจว่าฟรี)
+- [Gemini API แบบฟรี: Google อาจนำเนื้อหาที่ส่งไปใช้ปรับปรุงผลิตภัณฑ์] → ใช้กับเอกสารตัวอย่าง/สาธิตเท่านั้น ห้ามส่งใบกำกับภาษีจริงของบริษัทจนกว่าจะใช้แผนที่ไม่เอาข้อมูลไปใช้ (คู่มือเตือนไว้); ค่าเริ่มต้นของ production เป็น `fake`
 
 ## Migration Plan
 
 1. ทำทุกอย่างบนเครื่อง dev ก่อน: build image production, รัน `docker-compose.prod.yml` ด้วยชื่อ `localhost` (Caddy ใช้ใบรับรองภายใน) และรัน E2E ของ `qa/e2e` กับ stack นี้
-2. ผู้ใช้สร้างบัญชี OCI + VM + reserved IP + DuckDNS ตามคู่มือ (ขั้นตอนที่ต้องใช้บัญชีของผู้ใช้ — Claude ทำแทนไม่ได้)
+2. ผู้ใช้สร้างบัญชี OCI (Free Tier ไม่อัปเกรด) + VM + DuckDNS ตามคู่มือ (ขั้นตอนที่ต้องใช้บัญชีของผู้ใช้ — Claude ทำแทนไม่ได้)
 3. `bootstrap.sh` บน VM: ติดตั้ง Docker, ตั้ง firewall, swap 2 GB, ผู้ใช้ deploy, clone repo (deploy key แบบอ่านอย่างเดียวต่อ repo)
 4. `init-env.sh` → `deploy.sh` ครั้งแรก (migrate + seed) → ล็อกอิน Admin และเปลี่ยนรหัส → วัดผล → ตั้ง backup และ uptime monitor
 - rollback ของทั้ง phase: เครื่อง dev ไม่เปลี่ยน; ถ้าเลิกใช้ VM ก็แค่ปิด instance
