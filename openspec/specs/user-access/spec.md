@@ -18,7 +18,7 @@
 - **THEN** ผู้ใช้ได้รับสิทธิ์รวมของทั้งสอง role
 
 ### Requirement: Permission matrix
-ระบบ SHALL อนุญาตการกระทำตาม role ดังนี้: `AP_CLERK` อัปโหลด ดู และแก้ข้อมูลเอกสาร และดูทะเบียนผู้ขาย; `AP_LEAD` ทำได้เท่า `AP_CLERK` และอนุมัติ/ปฏิเสธเคสเสี่ยง; `FINANCE_EXEC` ดูเอกสาร รายงาน และ audit trail แบบอ่านอย่างเดียว; `SYS_ADMIN` จัดการผู้ใช้ การตั้งค่าระบบ API keys และการเชื่อมต่อ ERP และดู system logs การกระทำที่ role ไม่มีสิทธิ์ MUST ถูกปฏิเสธที่ฝั่ง server
+ระบบ SHALL อนุญาตการกระทำตาม role ดังนี้: `AP_CLERK` อัปโหลด ดู และแก้ข้อมูลเอกสาร และดูทะเบียนผู้ขาย; `AP_LEAD` ทำได้เท่า `AP_CLERK` และอนุมัติ/ปฏิเสธเคสเสี่ยง; `FINANCE_EXEC` ดูเอกสาร รายงาน และ audit trail แบบอ่านอย่างเดียว; `SYS_ADMIN` จัดการผู้ใช้ การตั้งค่าระบบ API keys และการเชื่อมต่อ ERP และดู system logs ทุก role SHALL เปิดหน้าภาพรวมได้ ส่วนบัญชีของ API key ไม่ได้รับสิทธิ์นี้ การกระทำที่ role ไม่มีสิทธิ์ MUST ถูกปฏิเสธที่ฝั่ง server
 
 #### Scenario: Finance Exec พยายามแก้ข้อมูล
 - **WHEN** ผู้ใช้ที่มีเพียง role `FINANCE_EXEC` ส่งคำขอแก้ field ของเอกสาร
@@ -35,6 +35,10 @@
 #### Scenario: Clerk ดู system logs
 - **WHEN** ผู้ใช้ role `AP_CLERK` เรียก API ค้น system logs
 - **THEN** ระบบตอบกลับ 403
+
+#### Scenario: ทุก role เปิดหน้าภาพรวม
+- **WHEN** ผู้ใช้ที่มีเพียง role ใด role หนึ่งในสี่ role เรียกข้อมูลหน้าภาพรวม
+- **THEN** ระบบตอบกลับสำเร็จ (200)
 
 ### Requirement: Password sign-in
 ผู้ใช้ SHALL ล็อกอินด้วยอีเมลและรหัสผ่าน ระบบ MUST เก็บรหัสผ่านแบบ hash ที่ย้อนกลับไม่ได้ และ MUST ไม่บอกว่าอีเมลหรือรหัสผ่านส่วนใดผิด
