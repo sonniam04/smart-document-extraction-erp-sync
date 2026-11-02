@@ -33,3 +33,6 @@ Thumbs.db
 # Separate repos (sdes-web, sdes-service)
 /Web/
 /Service/
+
+# ไฟล์สาธิตที่ seed-demo.mjs สร้าง (สำเนาเอกสารทดสอบ)
+qa/demo/uploads/
