@@ -70,7 +70,9 @@ async function login(browser: Browser, u: U): Promise<Page> {
   await page.getByLabel("อีเมล").fill(u.email);
   await page.getByLabel("รหัสผ่าน").fill(u.password);
   await page.getByRole("button", { name: "เข้าสู่ระบบ" }).click();
-  await expect(page).toHaveURL(/\/(documents|approvals)/);
+  // หน้าแรกหลังล็อกอินคือหน้าภาพรวม (overview-dashboard) — test ทำงานต่อจากคิวเอกสาร
+  await expect(page).toHaveURL(/:\d+\/$/);
+  await page.goto("/documents");
   return page;
 }
 

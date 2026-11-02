@@ -121,6 +121,7 @@ test("ฟีเจอร์ที่ขาด: API key, ทะเบียนผ
       .toBe("EXTRACTED");
 
     const page = await login(browser, clerk);
+    await page.goto("/documents"); // หน้าแรกหลังล็อกอินคือหน้าภาพรวม (overview-dashboard)
     await page.getByRole("tab", { name: /รอตรวจ/ }).click();
     await expect(page.locator(`tr[data-doc='${docNo}']`)).toContainText("รอตรวจ");
     await page.context().close();
@@ -158,6 +159,8 @@ test("ฟีเจอร์ที่ขาด: API key, ทะเบียนผ
     await page.goto(`/documents/${docId}`);
     await page.getByRole("button", { name: /ยืนยันและไปใบถัดไป/ }).click();
     await expect(page.getByText(`ยืนยัน ${docNo} แล้ว ส่งให้หัวหน้าอนุมัติแล้ว`, { exact: true })).toBeVisible();
+    // หน้าตรวจพาไปใบถัดไปเอง — รอให้ออกจากใบนี้ก่อน ไม่งั้น goto ชนกับการนำทางนั้น (ERR_ABORTED)
+    await expect(page).not.toHaveURL(new RegExp(`/documents/${docId}$`));
 
     await page.goto("/vendors");
     await page.getByRole("searchbox", { name: "ค้นหาผู้ขาย" }).fill(vendorTaxId);

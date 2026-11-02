@@ -112,6 +112,8 @@ test("หน้าภาพรวมบน stack จริง: งานค้�
     await page.goto(`/documents/${docId}`);
     await page.getByRole("button", { name: /ยืนยันและไปใบถัดไป/ }).click();
     await expect(page.getByText(`ยืนยัน ${docNo} แล้ว ส่งให้หัวหน้าอนุมัติแล้ว`, { exact: true })).toBeVisible();
+    // หน้าตรวจพาไปใบถัดไปเอง — รอให้ออกจากใบนี้ก่อน ไม่งั้น goto ชนกับการนำทางนั้น (ERR_ABORTED)
+    await expect(page).not.toHaveURL(new RegExp(`/documents/${docId}$`));
     await page.goto("/");
     await expect.poll(() => num(page, "today-verified"), { timeout: 15_000 }).toBe(verifiedBefore + 1);
     await page.screenshot({ path: "../overview-dashboard/evidence/e2e-dashboard-clerk.png", fullPage: true });

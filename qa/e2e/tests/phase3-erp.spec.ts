@@ -140,6 +140,7 @@ test("Phase 3: ส่งเข้า Odoo หลังยืนยัน/อน�
   const ids: Record<string, string> = {};
   const docNos: Record<string, string> = {};
   const page = await login(browser, clerk);
+  await page.goto("/documents"); // หน้าแรกหลังล็อกอินคือหน้าภาพรวม (overview-dashboard)
 
   await test.step("Clerk อัปโหลด 3 ฉบับของผู้ขายรายใหม่", async () => {
     await page.getByTestId("file-input").setInputFiles(Object.values(files));
