@@ -62,6 +62,25 @@ function covers(pred: BBox | null | undefined, truth: BBox | undefined) {
   return cx >= pred.x - m && cx <= pred.x + pred.w + m && cy >= pred.y - m && cy <= pred.y + pred.h + m;
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** ลองซ้ำเฉพาะข้อผิดพลาดชั่วคราว (แบบเดียวกับที่ worker ให้ BullMQ retry) — ms คือเวลาของครั้งที่สำเร็จ ไม่รวมการรอ */
+async function extractWithRetry<T>(fn: () => Promise<T>, retries: number, name: string): Promise<{ result: T; ms: number }> {
+  for (let attempt = 0; ; attempt++) {
+    const started = Date.now();
+    try {
+      const result = await fn();
+      return { result, ms: Date.now() - started };
+    } catch (e) {
+      const transient = (e as { permanent?: boolean }).permanent === false;
+      if (!transient || attempt >= retries) throw e;
+      const wait = 15_000 * (attempt + 1);
+      console.log(`${name}: พลาดชั่วคราว (${(e as Error).message}) — ลองใหม่ใน ${wait / 1000}s`);
+      await sleep(wait);
+    }
+  }
+}
+
 async function main() {
   const providerName = arg("provider", "fixture")!;
   const limit = Number(arg("limit", "0"));
@@ -102,19 +121,22 @@ async function main() {
   let wrongDocs = 0;
   const rows: string[] = [];
 
-  for (const m of docs) {
+  // --delay เว้นระหว่างเอกสาร (Gemini free tier จำกัด 5 ครั้ง/นาที → 13000), --retries ลองซ้ำเมื่อพลาดชั่วคราว (429/503)
+  const delayMs = Number(arg("delay", "0"));
+  const retries = Number(arg("retries", "3"));
+  for (const [i, m] of docs.entries()) {
+    if (i && delayMs) await sleep(delayMs);
     const ans = JSON.parse(readFileSync(join(OUT, "answers", `${m.name}.json`), "utf8")) as Answer;
     const file = readFileSync(join(OUT, "docs", m.file));
-    const started = Date.now();
     let result: ExtractionResult;
+    let ms: number;
     try {
-      result = await provider.extract({ file, mime: MIME[m.format]! });
+      ({ result, ms } = await extractWithRetry(() => provider.extract({ file, mime: MIME[m.format]! }), retries, m.name));
     } catch (e) {
       failed++;
       rows.push(`| ${m.name} | ${m.format} | ${m.pages} | — | — | — | อ่านไม่สำเร็จ: ${(e as Error).message} |`);
       continue;
     }
-    const ms = Date.now() - started;
     latencies.push(ms);
     const usage = (result.raw as { usage?: { input_tokens?: number; output_tokens?: number } })?.usage;
     inTok += usage?.input_tokens ?? 0;
@@ -128,7 +150,8 @@ async function main() {
     let docFieldOk = 0;
     for (const k of HEADER_FIELDS) {
       const f = penalized.header[k];
-      const ok = same(f.value, truth[k], NUMERIC.has(k));
+      // ส่วนลดเป็น 0 เอกสารไม่พิมพ์แถว "ส่วนลด" (generate.ts) — อ่านเป็นว่าง (null) จึงถือว่าถูก
+      const ok = same(f.value, truth[k], NUMERIC.has(k)) || (k === "discount" && f.value === null && Number(truth[k]) === 0);
       perField[k] ??= { ok: 0, total: 0 };
       perField[k].total++;
       fieldTotal++;
