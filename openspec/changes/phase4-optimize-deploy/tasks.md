@@ -45,7 +45,7 @@
 ## 7. เอกสารและ regression
 
 - [ ] 7.1 คู่มือ deploy (`docs/deploy/`): สร้าง VM, bootstrap, ค่าตั้ง, deploy/rollback, backup/restore, ย้ายเครื่อง, แก้ปัญหาที่พบบ่อย (capacity, ใบรับรอง, RAM) + อัปเดต README ของ Service/Web — ตรวจด้วยการให้ผู้ใช้ทำตามคู่มือในข้อ 5.1–5.2 ได้โดยไม่ต้องถามเพิ่ม และทุกคำสั่งในคู่มือถูกรันจริงในงานนี้
-- [ ] 7.2 test ทั้งหมดยังผ่าน: Service (`pnpm test`), Web (`pnpm test` + `pnpm test:e2e`), `qa/e2e` กับ stack dev เดิม และ CI ของทั้งสอง repo — ตรวจด้วยผลรันทั้งชุด
+- [x] 7.2 test ทั้งหมดยังผ่าน: Service (`pnpm test`), Web (`pnpm test` + `pnpm test:e2e`), `qa/e2e` กับ stack dev เดิม และ CI ของทั้งสอง repo — ตรวจด้วยผลรันทั้งชุด
 
 ## Workflow follow-up
 
