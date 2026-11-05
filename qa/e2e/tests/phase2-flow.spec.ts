@@ -71,7 +71,7 @@ async function login(browser: Browser, u: U): Promise<Page> {
   await page.getByLabel("รหัสผ่าน").fill(u.password);
   await page.getByRole("button", { name: "เข้าสู่ระบบ" }).click();
   // หน้าแรกหลังล็อกอินคือหน้าภาพรวม (overview-dashboard) — test ทำงานต่อจากคิวเอกสาร
-  await expect(page).toHaveURL(/:\d+\/$/);
+  await expect(page).toHaveURL(/^https?:\/\/[^/]+\/$/);
   await page.goto("/documents");
   return page;
 }

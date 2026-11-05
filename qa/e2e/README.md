@@ -24,7 +24,7 @@ Admin สร้าง Clerk และ Exec → Clerk ล็อกอินด้
    - เพิ่ม `RATE_LIMIT_AUTH=300` (ใส่ใน `WSLENV` ด้วยบน Windows) — ทุกบัญชีทดสอบล็อกอินจากเครื่องเดียวจึงใช้โควตา login/refresh ของ IP เดียวกัน ค่าเริ่มต้น 10 ครั้ง/นาทีจะได้ 429
    - สำหรับ Phase 3 เพิ่ม `--profile odoo` แล้วรัน `sh docker/odoo/setup.sh > <ไฟล์นอก repo>` ใน `Service/` (ผลมี API key ของ Odoo — **ห้ามเก็บใน repo**)
 3. เปิดเว็บ: `pnpm dev --port 3100` ใน `Web/`
-4. Phase 3: ตั้ง `SDES_ODOO_SETUP=<ไฟล์จากข้อ 2>` ก่อนรัน (ไม่ตั้ง = ข้าม spec นี้) test จะสั่ง `docker compose --profile odoo stop/up odoo` เอง (`SDES_DOCKER`, ค่าเริ่มต้น `wsl docker` บน Windows) และใช้บัญชี owner จาก `Service/.env` จำลองคำตอบที่หาย
+4. Phase 3: ตั้ง `SDES_ODOO_SETUP=<ไฟล์จากข้อ 2>` ก่อนรัน (ไม่ตั้ง = ข้าม spec นี้) test จะสั่ง `docker compose --profile odoo stop/up odoo` เอง (`SDES_DOCKER`, ค่าเริ่มต้น `wsl docker` บน Windows) และใช้บัญชี owner จาก `Service/.env` (หรือ `SDES_E2E_TOOLS_CMD`) จำลองคำตอบที่หาย
 
 ## รัน
 
@@ -38,3 +38,20 @@ pnpm test                       # หรือ npx playwright test --repeat-each
 - ตัวแปรเพิ่มของ Phase 3: `SDES_ODOO_SETUP`, `SDES_ODOO_URL` (`http://127.0.0.1:8069`), `SDES_DOCKER`; ภาพหลักฐานบันทึกที่ `qa/phase3/evidence/`
 - ตัวแปร: `SDES_WEB_URL` (ค่าเริ่มต้น `http://127.0.0.1:3100`), `SDES_API_URL` (`http://127.0.0.1:3000`), `SDES_SERVICE_DIR` (`../../Service`), `PW_CHANNEL` (`msedge`)
 - ภาพหน้าคิวหลังอ่านเสร็จถูกบันทึกที่ `qa/phase1/evidence/e2e-documents-extracted.png`
+
+## รันกับ stack production (phase 4 task 4.1)
+
+stack production ไม่เปิด port ของฐานข้อมูล/Redis ออกนอกเครื่อง — ตัวช่วยจึงสั่งผ่าน docker compose ของ `sdes-prod` แทน:
+
+| ตัวแปร | ค่า (ตัวอย่างบน Windows + WSL) |
+|---|---|
+| `SDES_WEB_URL` / `SDES_API_URL` | `https://localhost` / `https://localhost/api` |
+| `NODE_EXTRA_CA_CERTS` | `root.crt` ของ Caddy (ดู `docs/deploy/README.md` หัวข้อทดสอบบนเครื่อง dev) |
+| `SDES_E2E_LOCAL_CA=1` | ให้ browser ยอมรับใบรับรองจาก CA ภายใน |
+| `SDES_E2E_COMPOSE` | `wsl env SDES_TAG=<tag> docker compose -p sdes-prod --env-file <.env.production> -f <service>/docker-compose.prod.yml` |
+| `SDES_E2E_TOOLS_CMD` | `<SDES_E2E_COMPOSE> --profile tools run --rm -T migrate node -` — สร้าง QA admin และจำลองสถานะในฐานข้อมูล (สคริปต์ส่งทาง stdin) |
+| `SDES_E2E_ENV_FILE` | `.env.production` (อ่าน `REDIS_PASSWORD` ในหน่วยความจำ ไม่พิมพ์ออก) |
+| `SDES_E2E_ODOO_COMPOSE` | ไม่ต้องตั้ง — Odoo ใช้ compose dev แล้วต่อเข้า network: `docker network connect --alias odoo sdes-prod_sdes sdes-odoo-1` |
+
+api ต้องเริ่มด้วย `RATE_LIMIT_AUTH=300` ชั่วคราวระหว่างรัน (ค่าเริ่มต้นของ production คือ 10) แล้วคืนค่าเมื่อจบ
+port 3000 ของ api/web ไม่เปิดออกนอก stack — request ใดที่ไปตรงที่ port 3000 จะล้มทันที ชุดที่ผ่านจึงยืนยันว่าทุก request (รวม websocket ของสถานะ real-time) ผ่าน Caddy

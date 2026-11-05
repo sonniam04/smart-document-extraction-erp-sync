@@ -5,29 +5,29 @@
 
 ## 1. ค่าตั้งและความปลอดภัยของ production (`apps/api`, `apps/worker`)
 
-- [ ] 1.1 ตรวจค่าตั้งด้วย schema ตอนเริ่มเมื่อ `NODE_ENV=production` (design D6) — ตรวจด้วย unit test: ขาด JWT secret/รหัสผ่านสั้น/ค่าตัวอย่าง/`COOKIE_SECURE=false` → exit พร้อมชื่อค่าโดยไม่มีค่าใน log; ค่าครบ → เริ่มได้
-- [ ] 1.2 `/health` ซ่อนข้อความ error เมื่อ production (design D9) — ตรวจด้วย e2e test: production ได้เฉพาะชื่อบริการ + ok, dev ได้ข้อความเต็มเหมือนเดิม
-- [ ] 1.3 rate limit และ audit ใช้ IP จาก proxy ที่เชื่อถือได้เท่านั้น — ตรวจด้วย e2e test ตาม spec `platform-security` "Client IP behind a reverse proxy": ตั้ง `TRUST_PROXY` เป็น IP เดียว, header ปลอมจาก IP อื่นไม่ถูกใช้, คำขอที่ 11 ได้ 429, audit บันทึก IP จาก header ของ proxy
-- [ ] 1.4 Prisma `binaryTargets` สำหรับ musl ARM64/x86-64 และ connection limit ของ api/worker (design D3, D5) — ตรวจด้วย `prisma generate` มี engine ทั้งสองแบบ และ integration test เดิมผ่าน
+- [x] 1.1 ตรวจค่าตั้งด้วย schema ตอนเริ่มเมื่อ `NODE_ENV=production` (design D6) — ตรวจด้วย unit test: ขาด JWT secret/รหัสผ่านสั้น/ค่าตัวอย่าง/`COOKIE_SECURE=false` → exit พร้อมชื่อค่าโดยไม่มีค่าใน log; ค่าครบ → เริ่มได้
+- [x] 1.2 `/health` ซ่อนข้อความ error เมื่อ production (design D9) — ตรวจด้วย e2e test: production ได้เฉพาะชื่อบริการ + ok, dev ได้ข้อความเต็มเหมือนเดิม
+- [x] 1.3 rate limit และ audit ใช้ IP จาก proxy ที่เชื่อถือได้เท่านั้น — ตรวจด้วย e2e test ตาม spec `platform-security` "Client IP behind a reverse proxy": ตั้ง `TRUST_PROXY` เป็น IP เดียว, header ปลอมจาก IP อื่นไม่ถูกใช้, คำขอที่ 11 ได้ 429, audit บันทึก IP จาก header ของ proxy
+- [x] 1.4 Prisma `binaryTargets` สำหรับ musl ARM64/x86-64 และ connection limit ของ api/worker (design D3, D5) — ตรวจด้วย `prisma generate` มี engine ทั้งสองแบบ และ integration test เดิมผ่าน
 
 ## 2. Production image และ compose
 
-- [ ] 2.1 `Service/Dockerfile` multi-stage (`tools`, `runtime` จาก `pnpm deploy --prod`) และปักเวอร์ชัน image ภายนอกทุกตัวที่มี ARM64 (design D3) — ตรวจด้วยการ build `linux/amd64` บนเครื่อง dev: runtime < 300 MB, `docker history`/การค้นในชั้นไม่พบ secret, api/worker เริ่มได้, `tools` รัน `migrate deploy` และ `seed` ได้
-- [ ] 2.2 `Web/Dockerfile` แบบ standalone + `NEXT_PUBLIC_SDES_WS_URL` เป็น build arg (design D3) — ตรวจด้วย image < 200 MB, หน้าล็อกอินตอบพร้อม security headers ครบ, CSP `connect-src` ตรงกับโดเมนที่ build
-- [ ] 2.3 `Service/docker-compose.prod.yml` + `deploy/Caddyfile`: route, network ภายในที่กำหนด subnet, ไม่มี `ports:` นอกจาก Caddy, restart/healthcheck/depends_on, `mem_limit`, log rotation, Redis `noeviction`, ClamAV `ConcurrentDatabaseReload no`, ค่า PostgreSQL ตาม D5 (design D2, D4, D5) — ตรวจด้วยการรันบนเครื่อง dev ด้วยโดเมน `localhost`: `https://localhost` ใช้งานได้, http พาไป https, port ของ db/redis/s3/clamav/api ต่อจาก host ไม่ได้, เพดาน RAM รวม ≤ 9.6 GB (สคริปต์ตรวจจาก compose config)
-- [ ] 2.4 ทดสอบการทำงานต่อเนื่องบน stack production ของเครื่อง dev — ตรวจตาม spec `production-deployment` "Self-healing services": kill worker ระหว่างมีงานในคิว → เริ่มใหม่เองและงานเสร็จ; `docker compose restart` ทั้งชุด → ข้อมูลอยู่ครบ
+- [x] 2.1 `Service/Dockerfile` multi-stage (`tools`, `runtime` จาก `pnpm deploy --prod`) และปักเวอร์ชัน image ภายนอกทุกตัวที่มี ARM64 (design D3) — ตรวจด้วยการ build `linux/amd64` บนเครื่อง dev: runtime < 300 MB, `docker history`/การค้นในชั้นไม่พบ secret, api/worker เริ่มได้, `tools` รัน `migrate deploy` และ `seed` ได้
+- [x] 2.2 `Web/Dockerfile` แบบ standalone + `NEXT_PUBLIC_SDES_WS_URL` เป็น build arg (design D3) — ตรวจด้วย image < 200 MB, หน้าล็อกอินตอบพร้อม security headers ครบ, CSP `connect-src` ตรงกับโดเมนที่ build
+- [x] 2.3 `Service/docker-compose.prod.yml` + `deploy/Caddyfile`: route, network ภายในที่กำหนด subnet, ไม่มี `ports:` นอกจาก Caddy, restart/healthcheck/depends_on, `mem_limit`, log rotation, Redis `noeviction`, ClamAV `ConcurrentDatabaseReload no`, ค่า PostgreSQL ตาม D5 (design D2, D4, D5) — ตรวจด้วยการรันบนเครื่อง dev ด้วยโดเมน `localhost`: `https://localhost` ใช้งานได้, http พาไป https, port ของ db/redis/s3/clamav/api ต่อจาก host ไม่ได้, เพดาน RAM รวม ≤ 9.6 GB (สคริปต์ตรวจจาก compose config)
+- [x] 2.4 ทดสอบการทำงานต่อเนื่องบน stack production ของเครื่อง dev — ตรวจตาม spec `production-deployment` "Self-healing services": kill worker ระหว่างมีงานในคิว → เริ่มใหม่เองและงานเสร็จ; `docker compose restart` ทั้งชุด → ข้อมูลอยู่ครบ
 
 ## 3. Deploy, rollback และ backup (`Service/deploy/`)
 
-- [ ] 3.1 `init-env.sh` สร้างไฟล์ค่าตั้ง production ด้วยค่าสุ่ม mode 600 และไม่เขียนทับไฟล์เดิม (design D6) — ตรวจด้วย test สคริปต์ (`node --test` หรือ bats): ค่าทุกตัวยาวพอ, ไม่มีค่าซ้ำกัน, รันซ้ำแล้วไฟล์เดิมไม่เปลี่ยน
-- [ ] 3.2 `deploy.sh` (build tag ด้วย SHA → สำรอง → migrate one-shot → up → รอ health → `releases.log`) และ `rollback.sh` (design D7) — ตรวจบน stack production ของเครื่อง dev ตาม spec "Repeatable deploy and rollback": deploy ref ใหม่ที่มี migration แล้วเอกสารเดิมเปิดได้; deploy ref ที่ api เริ่มไม่ขึ้น (ทดสอบด้วยค่าตั้งผิดชั่วคราว) → รายงานล้มเหลว → `rollback.sh` กลับมาใช้งานได้
-- [ ] 3.3 service `backup` + `restore.sh` (design D7) — ตรวจตาม spec "Backup and restore": สำรอง → ลบ volume ทั้งหมด → กู้คืน → ล็อกอินได้, เอกสารพร้อมไฟล์ต้นฉบับเปิดได้, จำนวน audit event เท่าเดิม; รันการสำรอง 8 ครั้ง (ปรับวันที่จำลอง) แล้วเหลือ 7 ชุด
-- [ ] 3.4 `bootstrap.sh` สำหรับ Ubuntu 24.04 ARM64: Docker, firewall (22/80/443), swap 2 GB, ผู้ใช้ deploy, โฟลเดอร์ `/opt/sdes` — ตรวจด้วยการรันใน container Ubuntu 24.04 (หรือ VM ทดสอบ) แล้ว `docker compose version` ใช้ได้และ firewall เปิดเฉพาะ 3 port
-- [ ] 3.5 GitHub Actions `deploy.yml` (`workflow_dispatch`, SSH ด้วย secret, ผู้ใช้ที่สั่งได้เฉพาะ `deploy.sh`) — ตรวจด้วย `actionlint` และ dry-run กับเครื่อง dev (SSH ไป WSL) ก่อนใช้กับเครื่องจริง
+- [x] 3.1 `init-env.sh` สร้างไฟล์ค่าตั้ง production ด้วยค่าสุ่ม mode 600 และไม่เขียนทับไฟล์เดิม (design D6) — ตรวจด้วย test สคริปต์ (`node --test` หรือ bats): ค่าทุกตัวยาวพอ, ไม่มีค่าซ้ำกัน, รันซ้ำแล้วไฟล์เดิมไม่เปลี่ยน
+- [x] 3.2 `deploy.sh` (build tag ด้วย SHA → สำรอง → migrate one-shot → up → รอ health → `releases.log`) และ `rollback.sh` (design D7) — ตรวจบน stack production ของเครื่อง dev ตาม spec "Repeatable deploy and rollback": deploy ref ใหม่ที่มี migration แล้วเอกสารเดิมเปิดได้; deploy ref ที่ api เริ่มไม่ขึ้น (ทดสอบด้วยค่าตั้งผิดชั่วคราว) → รายงานล้มเหลว → `rollback.sh` กลับมาใช้งานได้
+- [x] 3.3 service `backup` + `restore.sh` (design D7) — ตรวจตาม spec "Backup and restore": สำรอง → ลบ volume ทั้งหมด → กู้คืน → ล็อกอินได้, เอกสารพร้อมไฟล์ต้นฉบับเปิดได้, จำนวน audit event เท่าเดิม; รันการสำรอง 8 ครั้ง (ปรับวันที่จำลอง) แล้วเหลือ 7 ชุด
+- [x] 3.4 `bootstrap.sh` สำหรับ Ubuntu 24.04 ARM64: Docker, firewall (22/80/443), swap 2 GB, ผู้ใช้ deploy, โฟลเดอร์ `/opt/sdes` — ตรวจด้วยการรันใน container Ubuntu 24.04 (หรือ VM ทดสอบ) แล้ว `docker compose version` ใช้ได้และ firewall เปิดเฉพาะ 3 port
+- [x] 3.5 GitHub Actions `deploy.yml` (`workflow_dispatch`, SSH ด้วย secret, ผู้ใช้ที่สั่งได้เฉพาะ `deploy.sh`) — ตรวจด้วย `actionlint` และ dry-run กับเครื่อง dev (SSH ไป WSL) ก่อนใช้กับเครื่องจริง
 
 ## 4. E2E กับ stack production บนเครื่อง dev
 
-- [ ] 4.1 รัน `qa/e2e` ทั้งชุดกับ `https://localhost` (stack production + fixture provider ผ่านค่าตั้งของ E2E) — ตรวจว่า Phase 1–3, ฟีเจอร์ที่ขาด และหน้าภาพรวมผ่าน รวม websocket ผ่าน Caddy (สถานะ real-time) และไม่มี request ใดไปที่ port 3000 โดยตรง
+- [x] 4.1 รัน `qa/e2e` ทั้งชุดกับ `https://localhost` (stack production + fixture provider ผ่านค่าตั้งของ E2E) — ตรวจว่า Phase 1–3, ฟีเจอร์ที่ขาด และหน้าภาพรวมผ่าน รวม websocket ผ่าน Caddy (สถานะ real-time) และไม่มี request ใดไปที่ port 3000 โดยตรง
 
 ## 5. ขึ้นเครื่องจริง
 

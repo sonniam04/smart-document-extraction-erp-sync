@@ -64,7 +64,7 @@ async function login(browser: Browser, u: U): Promise<Page> {
   await page.getByLabel("อีเมล").fill(u.email);
   await page.getByLabel("รหัสผ่าน").fill(u.password);
   await page.getByRole("button", { name: "เข้าสู่ระบบ" }).click();
-  await expect(page).toHaveURL(/:\d+\/$/, { timeout: 30_000 });
+  await expect(page).toHaveURL(/^https?:\/\/[^/]+\/$/, { timeout: 30_000 });
   await expect(page.getByRole("heading", { name: "ภาพรวม", level: 1 })).toBeVisible();
   return page;
 }

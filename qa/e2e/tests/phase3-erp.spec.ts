@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 import { expect, test, type APIRequestContext, type Browser, type Page } from "@playwright/test";
 import { QA_ADMIN_EMAIL } from "../global-setup";
 import { randomTaxId, writeFixture, type Header, type Item } from "../fixtures";
-import { compose, odooCall, odooSetup, withOwnerDb, type OdooSetup } from "../support";
+import { odooCall, odooCompose, odooSetup, withOwnerDb, type OdooSetup } from "../support";
 
 const setup = odooSetup();
 test.skip(!setup, "ตั้ง SDES_ODOO_SETUP เป็นไฟล์ผลของ docker/odoo/setup.sh (ดู README)");
@@ -89,7 +89,7 @@ let adminH: Record<string, string>;
 test.afterAll(async ({ request }) => {
   // ให้ E2E ของ Phase 1–2 ที่คาดว่าเอกสารคงที่ VERIFIED/APPROVED ไม่ถูกส่งต่อ และ Odoo กลับมาเปิดเสมอ
   if (adminH) await request.put("/api/erp/connection/auto-sync", { headers: adminH, data: { enabled: false } });
-  compose("up -d --wait odoo");
+  odooCompose("up -d --wait odoo");
 });
 
 test("Phase 3: ส่งเข้า Odoo หลังยืนยัน/อนุมัติ, ไม่ซ้ำเมื่อส่งใหม่, Odoo ปิดแล้วส่งใหม่สำเร็จ, audit", async ({ browser, request }) => {
@@ -210,8 +210,9 @@ test("Phase 3: ส่งเข้า Odoo หลังยืนยัน/อน�
   await test.step("ส่งใหม่ไม่เกิดใบซ้ำ: Odoo สร้างใบแล้วแต่ระบบไม่ได้รับคำตอบ → SYNC_FAILED → Admin ส่งใหม่ → ใช้ใบเดิม", async () => {
     const before = await detail(ids.b!);
     // จำลองคำตอบที่หายระหว่างทาง: Odoo มีใบแล้ว แต่ฝั่งเราเป็น SYNC_FAILED
-    await withOwnerDb((db) =>
-      db.document.update({ where: { id: ids.b }, data: { status: "SYNC_FAILED", syncError: "จำลอง: หมดเวลารอคำตอบจาก Odoo", erpTransactionId: null, syncedAt: null } }),
+    await withOwnerDb(
+      (db, id) => db.document.update({ where: { id }, data: { status: "SYNC_FAILED", syncError: "จำลอง: หมดเวลารอคำตอบจาก Odoo", erpTransactionId: null, syncedAt: null } }).then(() => null),
+      ids.b!,
     );
     const adminPage = await login(browser, admin);
     await adminPage.goto("/admin/sync");
@@ -229,7 +230,7 @@ test("Phase 3: ส่งเข้า Odoo หลังยืนยัน/อน�
   });
 
   await test.step("Odoo ปิด → C เป็น SYNC_FAILED พร้อมเหตุผล; Clerk เห็นเหตุผลแต่ไม่มีปุ่มส่งใหม่", async () => {
-    compose("stop odoo");
+    odooCompose("stop odoo");
     try {
       await page.goto(`/documents/${ids.c}`);
       await page.getByRole("button", { name: /ยืนยันและไปใบถัดไป/ }).click();
@@ -243,7 +244,7 @@ test("Phase 3: ส่งเข้า Odoo หลังยืนยัน/อน�
       await expect(page.getByTestId("sync-error")).toContainText(d.syncError);
       await expect(page.getByRole("button", { name: /ส่งใหม่/ })).toHaveCount(0);
     } finally {
-      compose("up -d --wait odoo");
+      odooCompose("up -d --wait odoo");
     }
   });
 

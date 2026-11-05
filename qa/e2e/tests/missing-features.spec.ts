@@ -7,7 +7,7 @@ import { resolve } from "node:path";
 import { expect, test, type APIRequestContext, type Browser, type Page } from "@playwright/test";
 import { QA_ADMIN_EMAIL } from "../global-setup";
 import { randomTaxId, writeFixture, type Header, type Item } from "../fixtures";
-import { SERVICE_DIR, compose } from "../support";
+import { compose, stackEnv } from "../support";
 
 const run = Date.now().toString(36);
 const API = process.env.SDES_API_URL ?? "http://127.0.0.1:3000";
@@ -190,7 +190,7 @@ test("ฟีเจอร์ที่ขาด: API key, ทะเบียนผ
 
   await test.step("Admin เห็น error ที่จำลองใน System logs", async () => {
     // ข้อความสถานะที่ผิดรูปแบบใน Redis → api เขียน warning (StatusGateway) ลง system_logs
-    const pw = readFileSync(resolve(SERVICE_DIR, ".env"), "utf8").match(/^REDIS_PASSWORD=(.*)$/m)![1]!.trim();
+    const pw = stackEnv("REDIS_PASSWORD");
     compose(`exec -T redis redis-cli -a ${pw} --no-auth-warning publish document-status e2e-bad-${run}`);
     const page = await login(browser, admin);
     await page.goto("/admin/logs");

@@ -64,7 +64,7 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
     const admin = await newPage(browser);
     await login(admin, QA_ADMIN_EMAIL, process.env.QA_ADMIN_PASSWORD!);
     // หน้าแรกหลังล็อกอินของทุก role คือหน้าภาพรวม (overview-dashboard)
-    await expect(admin).toHaveURL(/:\d+\/$/);
+    await expect(admin).toHaveURL(/^https?:\/\/[^/]+\/$/);
     await admin.goto("/admin/users");
     temps.clerk = await createUser(admin, clerk, /เจ้าหน้าที่บัญชี/);
     temps.exec = await createUser(admin, exec, /ผู้บริหารฝ่ายการเงิน/);
@@ -76,7 +76,7 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
   await test.step("Clerk ล็อกอินด้วยรหัสชั่วคราวและถูกบังคับเปลี่ยนรหัส", async () => {
     await login(page, clerk.email, temps.clerk!);
     await changeTempPassword(page, temps.clerk!, clerk.password);
-    await expect(page).toHaveURL(/:\d+\/$/);
+    await expect(page).toHaveURL(/^https?:\/\/[^/]+\/$/);
     await expect(page.getByRole("heading", { name: "ภาพรวม", level: 1 })).toBeVisible();
     await page.goto("/documents");
     await expect(page.getByRole("heading", { name: "คิวเอกสาร" })).toBeVisible();
@@ -122,7 +122,7 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
     const execPage = await newPage(browser);
     await login(execPage, exec.email, temps.exec!);
     await changeTempPassword(execPage, temps.exec!, exec.password);
-    await expect(execPage).toHaveURL(/:\d+\/$/);
+    await expect(execPage).toHaveURL(/^https?:\/\/[^/]+\/$/);
     await execPage.goto("/documents");
     await expect(execPage.getByText("ลากไฟล์มาวาง")).toHaveCount(0);
     await execPage.getByRole("tab", { name: /รอตรวจ/ }).click();
