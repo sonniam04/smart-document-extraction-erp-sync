@@ -1,0 +1,6 @@
+[submodule "Service"]
+	path = Service
+	url = https://github.com/sonniam04/sdes-service.git
+[submodule "Web"]
+	path = Web
+	url = https://github.com/sonniam04/sdes-web.git
