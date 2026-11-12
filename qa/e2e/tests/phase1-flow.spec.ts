@@ -3,13 +3,19 @@
 import { randomBytes } from "node:crypto";
 import { expect, test, type Browser, type Page } from "@playwright/test";
 import { QA_ADMIN_EMAIL } from "../global-setup";
+import { writeFixture } from "../fixtures";
 
 const run = Date.now().toString(36);
 const clerk = { email: `qa-clerk-${run}@sdes.local`, name: `QA Clerk ${run}`, password: `qa-clerk-${randomBytes(9).toString("base64url")}` };
 const exec = { email: `qa-exec-${run}@sdes.local`, name: `QA Exec ${run}`, password: `qa-exec-${randomBytes(9).toString("base64url")}` };
 
 /** PDF เล็กที่มีเนื้อหาไม่ซ้ำกันทุกครั้งที่รัน เพื่อไม่ชนกับเอกสารจากรอบก่อน */
-const pdf = (label: string) => Buffer.from(`%PDF-1.4\n% SDES QA ${run} ${label} ${randomBytes(8).toString("hex")}\n%%EOF\n`);
+// มีเฉลยผลว่างให้ fixture provider ด้วย (worker ใน E2E ใช้ EXTRACTION_PROVIDER=fixture)
+const pdf = (label: string) => {
+  const b = Buffer.from(`%PDF-1.4\n% SDES QA ${run} ${label} ${randomBytes(8).toString("hex")}\n%%EOF\n`);
+  writeFixture(b);
+  return b;
+};
 
 async function login(page: Page, email: string, password: string) {
   await page.goto("/login");
@@ -57,7 +63,9 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
   await test.step("Admin สร้าง Clerk และ Exec", async () => {
     const admin = await newPage(browser);
     await login(admin, QA_ADMIN_EMAIL, process.env.QA_ADMIN_PASSWORD!);
-    await expect(admin).toHaveURL(/\/admin\/users/);
+    // หน้าแรกหลังล็อกอินของทุก role คือหน้าภาพรวม (overview-dashboard)
+    await expect(admin).toHaveURL(/^https?:\/\/[^/]+\/$/);
+    await admin.goto("/admin/users");
     temps.clerk = await createUser(admin, clerk, /เจ้าหน้าที่บัญชี/);
     temps.exec = await createUser(admin, exec, /ผู้บริหารฝ่ายการเงิน/);
     await admin.context().close();
@@ -68,7 +76,9 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
   await test.step("Clerk ล็อกอินด้วยรหัสชั่วคราวและถูกบังคับเปลี่ยนรหัส", async () => {
     await login(page, clerk.email, temps.clerk!);
     await changeTempPassword(page, temps.clerk!, clerk.password);
-    await expect(page).toHaveURL(/\/documents/);
+    await expect(page).toHaveURL(/^https?:\/\/[^/]+\/$/);
+    await expect(page.getByRole("heading", { name: "ภาพรวม", level: 1 })).toBeVisible();
+    await page.goto("/documents");
     await expect(page.getByRole("heading", { name: "คิวเอกสาร" })).toBeVisible();
   });
 
@@ -76,7 +86,8 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
     // เครื่องหมายบน window หายไปถ้าหน้าถูกโหลดใหม่
     await page.evaluate(() => ((window as unknown as { __qaNoReload: boolean }).__qaNoReload = true));
     let navigations = 0;
-    page.on("framenavigated", (f) => f === page.mainFrame() && navigations++);
+    // การเปลี่ยนแท็บอัปเดต ?tab= ผ่าน history (ไม่โหลดหน้าใหม่ — __qaNoReload ยืนยันอีกชั้น) จึงไม่นับ
+    page.on("framenavigated", (f) => f === page.mainFrame() && !/\/documents\?tab=\w+$/.test(f.url()) && navigations++);
 
     const a = pdf("A");
     await page.getByTestId("file-input").setInputFiles([
@@ -111,7 +122,8 @@ test("Phase 1: ผู้ใช้ → อัปโหลด → สถานะ 
     const execPage = await newPage(browser);
     await login(execPage, exec.email, temps.exec!);
     await changeTempPassword(execPage, temps.exec!, exec.password);
-    await expect(execPage).toHaveURL(/\/documents/);
+    await expect(execPage).toHaveURL(/^https?:\/\/[^/]+\/$/);
+    await execPage.goto("/documents");
     await expect(execPage.getByText("ลากไฟล์มาวาง")).toHaveCount(0);
     await execPage.getByRole("tab", { name: /รอตรวจ/ }).click();
     await expect(execPage.locator(`tr[data-doc='${docs.a}']`)).toBeVisible();
