@@ -2,6 +2,16 @@
 
 ระบบอ่านใบแจ้งหนี้ ใบกำกับภาษี และใบเสร็จด้วย AI → ตรวจความถูกต้องตามกฎบัญชีไทย → ให้เจ้าหน้าที่ตรวจทานแบบเห็นต้นฉบับคู่กัน → อนุมัติเอกสารที่มีความเสี่ยง → ส่งเข้า ERP (Odoo) เป็นใบแจ้งหนี้ผู้ขายแบบร่าง พร้อม audit trail ทุกขั้น
 
+> **English summary** — SDES reads Thai invoices, tax invoices and receipts with an LLM (Gemini or Claude vision), validates them against Thai accounting rules (Tax ID checksum, Subtotal + VAT 7% − WHT = Grand Total ±0.01), routes risky documents to an approver, lets an AP clerk review fields side by side with the original, and posts approved documents to **Odoo 19** as draft vendor bills — with an append-only audit trail of every action.
+>
+> - **Backend:** NestJS, BullMQ/Redis workers, Prisma + PostgreSQL 16, S3-compatible storage (SeaweedFS), ClamAV scanning, socket.io real-time updates
+> - **Frontend:** Next.js 15 (App Router), Tailwind 4, PDF.js split-view review
+> - **Security:** RBAC with segregation of duties enforced on every API route (regression-tested), encrypted ERP credentials, hashed API keys, PII-masked logs
+> - **Quality:** unit tests, Playwright E2E across the full Docker stack (upload → AI → review → approve → Odoo), GitHub Actions CI with a dependency-audit gate
+> - **Status:** features complete and running locally with Docker Compose; production deploy (Oracle Cloud Free + Caddy) is scripted but not yet live; the 500-document accuracy/latency acceptance test from the BRD has not been run yet.
+>
+> Personal portfolio project. All documents shown are synthetic. Docs below are in Thai.
+
 ขอบเขตมาจาก [BRD & TOR (TOR-BRD-ERP-01)](docs/Business%20Requirements%20Document%20%26%20Terms%20of%20Reference.pdf)
 
 | เป้าหมายตาม BRD | ค่า |
